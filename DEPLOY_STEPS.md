@@ -101,6 +101,19 @@ Then, on the VPS, open that file and paste in the contents of
 **Do not touch the other site blocks already in that file** — Dasabo's
 mirrored sites are live production traffic on this same box.
 
+**If `nl1-setup.sh` (from the GDrive foundation folder) has already run
+on this box:** it writes its own `totat.my.id { ... }` block into
+`/opt/totat/caddy/totat-blocks.caddy`, pointing at `/opt/totat/sites/main`
+with no CSP/HSTS headers and no `www.totat.my.id` handling. **Skip that
+specific block when merging** — use `deploy/Caddyfile.totat-site` from
+this repo for `totat.my.id`/`www.totat.my.id` instead, since it's the
+more complete definition (hardened headers, both hostnames). The rest of
+`totat-blocks.caddy` (the other subdomains, `context.totat.my.id`,
+`app.totat.my.id`) doesn't conflict with anything in this repo and can be
+merged as-is. Applying both `totat.my.id` blocks together will make Caddy
+either reject the duplicate site address on `caddy validate`, or have one
+silently shadow the other — don't merge both.
+
 Validate and reload:
 ```bash
 sudo caddy validate --config <path-to-Caddyfile>
