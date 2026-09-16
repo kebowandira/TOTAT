@@ -5,9 +5,40 @@ That is deliberate — it minimizes attack surface. The security of this
 deployment depends almost entirely on VPS/server hardening, not on the
 page's code.
 
-Recommended target from your existing fleet: **NL1** (4 core / 8GB,
-DeluxHost, already has DNS patterns via Cloudflare) or **Dasabo EU3**
-(smaller, already earmarked for lightweight static work).
+Target: **NL1** (DeluxHost, 92.112.126.231) — confirmed by
+`claude-shared-context/INFRASTRUCTURE_SUMMARY.md` (Google Drive) to have
+the most free RAM/CPU/disk of the fleet.
+
+**Read this before anything else: what "NL1" actually runs is disputed
+between documents.** The infra summary says NL1 runs **Caddy**, already
+serving as a warm-standby mirror of Dasabo's WordPress/Grav sites
+(`globalenglish-academy.com`, `bule.my.id`) — no mention of nginx, and no
+mention of TOTAT. A separate, earlier brief claimed NL1 runs "a FastAPI
+heartbeat/dashboard service" instead. Neither claim should be trusted
+blind. **Before touching anything, run on NL1 itself:**
+```bash
+sudo systemctl list-units --type=service --state=running
+sudo ss -tlnp
+ls /opt/totat 2>/dev/null
+sudo caddy list-modules >/dev/null 2>&1 && echo "caddy present"
+```
+Reconcile what you actually see against this doc before proceeding — this
+guide assumes Caddy is real and current, but verify first.
+
+---
+
+## 0. SSH access
+
+Per `claude-shared-context/INFRASTRUCTURE_SUMMARY.md`:
+```bash
+ssh -p 2299 -i ~/.ssh/nl1_new bule@92.112.126.231
+```
+- User `bule`, sudo-enabled, key-only auth (password auth and root login
+  are already disabled at the OS level).
+- **Never `cat`, open, or paste a private key's contents into a chat
+  session for any reason** — reference it by path only and let the `ssh`
+  binary read it directly. (This exact mistake has burned keys on this
+  project before.)
 
 ---
 
@@ -15,32 +46,27 @@ DeluxHost, already has DNS patterns via Cloudflare) or **Dasabo EU3**
 
 In Cloudflare, add an A record:
 ```
-totat.my.id      A     <your VPS IP>      (proxied or DNS-only, your choice)
-www.totat.my.id  A     <your VPS IP>
+totat.my.id      A     92.112.126.231      (proxied or DNS-only, your choice)
+www.totat.my.id  A     92.112.126.231
 ```
 If using Cloudflare proxy (orange cloud), you get free DDoS mitigation and
-can skip the local firewall rate-limiting steps below — Cloudflare absorbs
-most of it before it reaches your VPS.
+can skip local firewall rate-limiting — Cloudflare absorbs most of it
+before it reaches the VPS.
 
-**If proxied, two things to set correctly (both easy to forget):**
-1. In Cloudflare → SSL/TLS → Overview, set the mode to **Full** or
-   **Full (strict)** once Certbot has issued a real cert on the origin
-   (step 4). Leaving it on "Flexible" causes a redirect loop between
-   Cloudflare and nginx once HTTPS-only redirect is on at the origin.
-2. `deploy/cloudflare-realip.conf` (in this repo) restores the real
-   visitor IP from Cloudflare's `CF-Connecting-IP` header — otherwise
-   nginx logs will just show Cloudflare's edge IPs. Deploy it alongside
-   the site config (step 3). It's a no-op if you choose DNS-only.
+**If proxied:** once Caddy has issued its automatic cert (step 4 — no
+Certbot involved, see below), set Cloudflare → SSL/TLS → Overview to
+**Full** or **Full (strict)**. Leaving it on "Flexible" causes a redirect
+loop once Caddy's HTTP→HTTPS redirect is live.
 
 ---
 
-## 2. Upload the file
+## 2. Upload the site files
 
-From your local machine (note `assets/` now ships alongside `index.html` —
-it holds the language-toggle script, moved out of an inline `<script>` so
-the nginx CSP can drop `'unsafe-inline'` on `script-src`):
+From your local machine (`assets/` ships alongside `index.html` — it
+holds the language-toggle script, moved out of an inline `<script>` so
+the CSP below can drop `'unsafe-inline'` on `script-src`):
 ```bash
-scp -r index.html assets youruser@<VPS_IP>:/tmp/
+scp -P 2299 -i ~/.ssh/nl1_new -r index.html assets bule@92.112.126.231:/tmp/
 ```
 
 On the VPS:
@@ -50,86 +76,73 @@ sudo mv /tmp/index.html /tmp/assets /var/www/totat.my.id/
 sudo chown -R www-data:www-data /var/www/totat.my.id
 sudo chmod -R 755 /var/www/totat.my.id
 ```
+(`www-data` ownership is standard even under Caddy, which by default
+runs as its own user but only needs read access to this directory.)
 
 ---
 
-## 3. nginx config
+## 3. Caddy site block (NOT nginx — see the warning at the top)
 
-Copy both `deploy/totat.my.id.conf` and `deploy/cloudflare-realip.conf`
-from this repo to the VPS:
+NL1 already runs Caddy for other sites. Do not install nginx — a second
+web server fighting Caddy for ports 80/443 is the exact mistake this repo
+made earlier before the real infra doc was found. Instead, **append** the
+block in `deploy/Caddyfile.totat-site` (this repo) to NL1's existing
+Caddyfile.
+
+Find the live Caddyfile first — its path isn't documented, don't assume:
 ```bash
-scp deploy/totat.my.id.conf deploy/cloudflare-realip.conf youruser@<VPS_IP>:/tmp/
+sudo systemctl show caddy -p FragmentPath
+# or: ps aux | grep 'caddy run' , or check /etc/caddy/, /opt/*/Caddyfile
 ```
 
-On the VPS:
+Then, on the VPS, open that file and paste in the contents of
+`deploy/Caddyfile.totat-site` (copy it over first: `scp -P 2299 -i
+~/.ssh/nl1_new deploy/Caddyfile.totat-site bule@92.112.126.231:/tmp/`).
+**Do not touch the other site blocks already in that file** — Dasabo's
+mirrored sites are live production traffic on this same box.
+
+Validate and reload:
 ```bash
-sudo mv /tmp/totat.my.id.conf /etc/nginx/sites-available/totat.my.id
-sudo mv /tmp/cloudflare-realip.conf /etc/nginx/conf.d/cloudflare-realip.conf
-sudo ln -s /etc/nginx/sites-available/totat.my.id /etc/nginx/sites-enabled/
-sudo nginx -t          # test config before reloading — always do this
-sudo systemctl reload nginx
+sudo caddy validate --config <path-to-Caddyfile>
+sudo systemctl reload caddy
 ```
 
-Before relying on `cloudflare-realip.conf`, double check its IP ranges
-against https://www.cloudflare.com/ips/ — Cloudflare's edge ranges
-occasionally change and the file says so at the top.
-
-Visit `http://totat.my.id` — it should load over plain HTTP first.
+Visit `http://totat.my.id` — Caddy should already be redirecting to
+HTTPS by this point (see step 4).
 
 ---
 
-## 4. HTTPS via Certbot (Let's Encrypt — free, auto-renewing)
+## 4. HTTPS — handled automatically by Caddy
 
-If Certbot isn't installed yet:
-```bash
-sudo apt update
-sudo apt install certbot python3-certbot-nginx -y
-```
+Unlike nginx+Certbot, **Caddy provisions and renews Let's Encrypt certs
+on its own** the moment a domain in its config resolves to this server —
+there is no separate install step, no `certbot` command, and no cron/timer
+to verify. As long as DNS (step 1) resolves to NL1 before you reload
+Caddy, HTTPS should just work.
 
-Then:
-```bash
-sudo certbot --nginx -d totat.my.id -d www.totat.my.id
-```
-Certbot will detect the nginx config, ask for an email (for renewal
-notices), and offer to auto-redirect HTTP → HTTPS. **Say yes to the
-redirect.** It rewrites the config automatically — you don't need to
-hand-edit the file afterward.
+HSTS is already included in `deploy/Caddyfile.totat-site`'s header block
+(`Strict-Transport-Security`), unlike the old nginx plan where it needed a
+manual post-Certbot step.
 
-Certbot sets up auto-renewal via systemd timer by default. Verify:
-```bash
-sudo systemctl status certbot.timer
-```
-
-**Manual follow-up Certbot doesn't do for you: HSTS.** After confirming
-`https://totat.my.id` works reliably (give it a few days in case a
-rollback is ever needed — HSTS is hard for visitors' browsers to
-un-remember), add this line inside the `server { listen 443 ... }` block
-Certbot created, then `nginx -t && systemctl reload nginx`:
-```
-add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-```
+If HTTPS doesn't come up: check `sudo journalctl -u caddy -n 50` for ACME
+errors (common causes: DNS not yet propagated, or Cloudflare proxy
+blocking the ACME challenge — try DNS-only temporarily to confirm, then
+re-enable proxy).
 
 ---
 
-## 5. Baseline VPS hardening checklist (do this once per box, not per site)
+## 5. Baseline VPS hardening — already confirmed done fleet-wide
 
-If any of these are already true on this VPS from prior setup, skip them —
-this is a checklist, not a script to blindly re-run.
+Per `claude-shared-context/INFRASTRUCTURE_SUMMARY.md`, all three fleet
+boxes (including NL1) are already: Ubuntu 24.04 LTS, UFW + Fail2Ban +
+unattended-upgrades active, SSH key-only with root login disabled, SSH
+moved to a non-default port (2299 for NL1). **Nothing to do here** —
+this is confirmed current as of 2026-09-16, not speculative.
 
-- [ ] SSH: key-based auth only, password auth disabled
-      (`/etc/ssh/sshd_config` → `PasswordAuthentication no`)
-- [ ] SSH: consider moving off port 22 if this box is internet-facing
-      and not already behind Cloudflare proxy
-- [ ] Firewall: `ufw allow 80,443,22` then `ufw enable` — deny everything
-      else by default
-- [ ] `fail2ban` installed and running (blocks brute-force SSH attempts)
-- [ ] Unattended security upgrades enabled:
-      `sudo apt install unattended-upgrades -y`
-- [ ] nginx version is current (`nginx -v`, compare to latest stable)
-
-None of this is TOTAT-specific — it's the same checklist that should
-already apply to every box in the fleet. If NL1 or Dasabo EU3 already
-has this done from earlier work, nothing further needed here.
+The one thing worth a live check per the infra doc's own "known open
+items": NL1's SSH access hadn't been re-verified very recently as of that
+writing. Confirm `ssh -p 2299 -i ~/.ssh/nl1_new bule@92.112.126.231` still
+works before relying on it for this deployment.
 
 ---
 
@@ -138,12 +151,12 @@ has this done from earlier work, nothing further needed here.
 - **No WAF / reverse proxy app** — there's no app logic to protect;
   static files have no injection surface.
 - **No database backup routine** — there's no database. The source of
-  truth for this page is the `index.html` file itself (and this Claude
-  project's memory, which has the content).
+  truth for this page is the `index.html` file itself, tracked in git.
 - **No dependency scanning** — zero npm/pip packages are used by this
   page. Nothing to have a supply-chain vulnerability in.
+- **No Certbot** — Caddy's built-in ACME client replaces it entirely.
 
 If you later add a contact form that emails you, or any server-side
-logic, that changes this picture — flag it and we'll revisit hardening
-for that specific addition rather than assuming the same "static site"
-risk profile still applies.
+logic, that changes this picture — flag it and revisit hardening for that
+specific addition rather than assuming the same "static site" risk
+profile still applies.

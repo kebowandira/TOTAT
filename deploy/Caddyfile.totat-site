@@ -1,0 +1,37 @@
+# Caddy site block for totat.my.id — APPEND this into the existing
+# Caddyfile on NL1 (per claude-shared-context/INFRASTRUCTURE_SUMMARY.md,
+# NL1 already runs Caddy for Dasabo's mirrored sites). Do not create a
+# separate nginx instance — nginx was the wrong assumption in the
+# original brief and would fight Caddy for ports 80/443.
+#
+# Find the live Caddyfile path on NL1 first (don't assume a location —
+# it's not documented here): something like
+#   sudo systemctl show caddy -p FragmentPath   # -> reveals ExecStart, ex: caddy run --config /path/Caddyfile
+# or check the caddy systemd unit / `caddy adapt` output.
+#
+# Caddy auto-provisions and renews HTTPS for any domain listed here via
+# its built-in ACME client — there is no separate Certbot step, unlike
+# the old nginx-based plan. DNS just needs to already point at NL1
+# before this block is added (self-signed fallback otherwise, no error).
+
+totat.my.id, www.totat.my.id {
+	root * /var/www/totat.my.id
+	file_server
+	encode gzip
+
+	header {
+		X-Frame-Options "SAMEORIGIN"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		Content-Security-Policy "default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; img-src 'self' data:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+
+	# No dotfile access, no stray config/backup files served
+	@blocked path *.conf *.bak *.old *.swp
+	respond @blocked 404
+	@dotfiles path_regexp \/\.[^/]+$
+	respond @dotfiles 404
+}
