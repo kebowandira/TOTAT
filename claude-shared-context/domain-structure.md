@@ -219,7 +219,7 @@ USP: 5 menit sehari → siap sertifikasi regional
 
 
 ## BETA STATUS
-App live: https://totat.bule.my.id (Hercules custom domain)
+App live: https://warungbeta.totat.my.id (Hercules custom domain)
 Also at: https://my-new-app-355108.onhercules.app
 Tester form: https://tally.so/r/Bzr1qN
 Feedback form: https://tally.so/r/Y51OEv

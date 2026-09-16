@@ -403,7 +403,7 @@ IMPORTANT RULES:
 GITHUB REPO:   https://github.com/kebowandira/TOTAT
 GDRIVE:        https://drive.google.com/drive/folders/1u5dWXJF6eDGy4rkBU3WrLAbxx7J7UWNI
 CONTEXT URL:   https://context.totat.my.id/ (after NL1 setup)
-APP BETA:      https://totat.bule.my.id
+APP BETA:      https://warungbeta.totat.my.id
 TESTER FORM:   https://tally.so/r/Bzr1qN
 FEEDBACK:      https://tally.so/r/Y51OEv
 WA COMMUNITY:  https://chat.whatsapp.com/GLmk1xTigpO6uGLoDk4z8z

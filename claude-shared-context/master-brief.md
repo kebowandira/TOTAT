@@ -21,7 +21,7 @@ Beta (sekarang):
   Frontend: React 19 + Vite + TypeScript + Tailwind v4 + shadcn/ui
   DB: Convex (Hercules cloud)
   Auth: Google OAuth via @usehercules/auth
-  URL: my-new-app-355108.onhercules.app / totat.bule.my.id
+  URL: my-new-app-355108.onhercules.app / warungbeta.totat.my.id
 
 
 Production (Sep 2027):
@@ -122,7 +122,7 @@ Scripts: /opt/totat/scripts/
 
 
 ## 11. KEY LINKS
-App beta: https://totat.bule.my.id
+App beta: https://warungbeta.totat.my.id
 Form tester: https://tally.so/r/Bzr1qN
 Form feedback: https://tally.so/r/Y51OEv
 WA Community: https://chat.whatsapp.com/GLmk1xTigpO6uGLoDk4z8z

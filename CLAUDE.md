@@ -59,13 +59,11 @@ Existing Caddy systemd config ← check before any Caddy changes
 
 
 ## Current Status
-- TOTAT app: LIVE at totat.bule.my.id via Hercules (NOT on NL1 yet)
+- TOTAT app: LIVE at warungbeta.totat.my.id via Hercules (NOT on NL1 yet)
 - NL1 role: context server + landing pages + future self-host (Sep 2027)
 - /opt/totat/ may not exist yet — check before assuming
 
 
-## context.totat.my.id — Auth Decision PENDING
-Files served include internal business docs (schema, roadmap).
-Decision needed from BuLe: public (any AI can read) vs token-protected.
+## context.totat.my.id — Auth
+DECIDED: PUBLIC — no auth required (Sep 2026). Schema + conventions only, no user data.
 DO NOT expose sensitive financial/user data in context files.
-Current files are safe (schema + conventions only — no user data).

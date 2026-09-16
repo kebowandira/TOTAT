@@ -52,9 +52,8 @@ Scope: same as Gemini/ChatGPT — advisory, not an execution agent.
 
 ## Context server (context.totat.my.id)
 Not an AI — the shared read endpoint every AI above can fetch from
-instead of needing repo access. Status: NL1 setup pending (see
-`TOTAT_ClaudeCode_Master_v3.md` Task B). Auth: that same v3 doc states
-"PUBLIC (no auth needed)" as a settled rule — note this contradicts
-`CLAUDE.md`/`AI_MASTER_GUIDE.md` in this same bundle, which still mark
-the decision "PENDING." Treat v3 as the newer, resolving source until
-BuLe confirms and the older files are updated to match.
+instead of needing repo access. Status: NL1 setup pending (Task 5,
+`TOTAT_ClaudeCode_Master_v5.md`). Auth: DECIDED — PUBLIC, no auth
+required (Sep 2026, confirmed in `TOTAT_ClaudeCode_Master_v5.md`
+Task 1). `CLAUDE.md` and `AI_MASTER_GUIDE.md` in this bundle now both
+reflect this.
