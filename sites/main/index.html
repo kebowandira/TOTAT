@@ -79,6 +79,14 @@ h2{font-weight:800;font-size:clamp(22px,3vw,28px);letter-spacing:-0.01em;margin:
 .product-badge.live{background:var(--teal-light);color:var(--teal-dark);}
 .product-badge.soon{background:var(--rule);color:var(--gray);}
 
+.about-wrap{max-width:1080px;}
+.about-p{font-size:16px;color:var(--gray);max-width:70ch;margin:0 auto 32px;text-align:center;}
+.about-points{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+@media (max-width:760px){ .about-points{grid-template-columns:1fr;} }
+.about-point{background:var(--white);border:1px solid var(--rule);border-radius:12px;padding:20px 18px;}
+.about-point .k{font-weight:700;font-size:15px;margin-bottom:8px;}
+.about-point p{margin:0;font-size:14px;color:var(--gray);line-height:1.5;}
+
 .cta-section{background:var(--ink);color:var(--paper);border-bottom:none;text-align:center;}
 .cta-section h2{color:var(--paper);}
 .btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:16px;padding:14px 30px;border-radius:9px;text-decoration:none;background:var(--teal);color:#fff;transition:background .15s;}
@@ -107,7 +115,7 @@ footer{padding:28px 0;}
     <nav>
       <a href="https://warung.totat.my.id">Warung</a>
       <a href="#tentang">Tentang</a>
-      <a href="https://warungbeta.totat.my.id" target="_blank" rel="noopener">Beta</a>
+      <a href="https://tally.so/r/Bzr1qN" target="_blank" rel="noopener">Beta</a>
     </nav>
   </div>
 </header>
@@ -123,55 +131,79 @@ footer{padding:28px 0;}
   </section>
 
   <section id="tentang">
+    <div class="wrap about-wrap">
+      <div class="section-label">TENTANG TOTAT</div>
+      <h2>Dibangun dari masalah nyata, bukan dari spreadsheet fitur.</h2>
+      <p class="about-p">
+        Jutaan pedagang kecil di Indonesia masih mencatat penjualan di buku tulis, atau tidak mencatat sama sekali. Aplikasi kasir yang ada terlalu rumit, berbayar, atau dirancang untuk toko besar. TOTAT dimulai dari satu warung — dan dibangun agar tetap sederhana selamanya, meski usahanya bertumbuh.
+      </p>
+      <div class="about-points">
+        <div class="about-point">
+          <div class="k">Gratis, benar-benar.</div>
+          <p>Bukan freemium yang dipotong. Fitur inti tidak pernah dikunci di balik langganan.</p>
+        </div>
+        <div class="about-point">
+          <div class="k">Bahasa Indonesia, sungguhan.</div>
+          <p>Dirancang untuk pengguna yang belum pernah pakai sistem digital — bukan terjemahan aplikasi asing.</p>
+        </div>
+        <div class="about-point">
+          <div class="k">Satu sistem, bertumbuh.</div>
+          <p>Dari warung satu orang hingga usaha dengan karyawan dan banyak cabang — data tetap satu tempat.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="produk">
     <div class="wrap">
       <div class="section-label">EKOSISTEM PRODUK</div>
       <h2>Satu keluarga produk, sesuai kebutuhan usaha Anda.</h2>
       <div class="product-grid">
-        <a class="product-card" href="https://warungbeta.totat.my.id" target="_blank" rel="noopener">
+        <a class="product-card" href="https://tally.so/r/Bzr1qN" target="_blank" rel="noopener">
           <div class="pname">Warung</div>
           <span class="product-badge live">Beta</span>
         </a>
-        <a class="product-card" href="https://tally.so/r/Bzr1qN" target="_blank" rel="noopener">
+        <a class="product-card" href="https://cafe.totat.my.id">
           <div class="pname">Saji</div>
           <span class="product-badge soon">Segera Hadir</span>
         </a>
-        <a class="product-card" href="https://tally.so/r/Bzr1qN" target="_blank" rel="noopener">
+        <a class="product-card" href="https://sewa.totat.my.id">
           <div class="pname">Sewa</div>
           <span class="product-badge soon">Segera Hadir</span>
         </a>
-        <a class="product-card" href="https://tally.so/r/Bzr1qN" target="_blank" rel="noopener">
+        <a class="product-card" href="https://tamu.totat.my.id">
           <div class="pname">Tamu</div>
           <span class="product-badge soon">Segera Hadir</span>
         </a>
-        <a class="product-card" href="https://tally.so/r/Bzr1qN" target="_blank" rel="noopener">
+        <a class="product-card" href="https://jasa.totat.my.id">
           <div class="pname">Jasa</div>
           <span class="product-badge soon">Segera Hadir</span>
         </a>
-        <a class="product-card" href="https://tally.so/r/Bzr1qN" target="_blank" rel="noopener">
+        <a class="product-card" href="https://talent.totat.my.id">
           <div class="pname">Talent</div>
           <span class="product-badge soon">Segera Hadir</span>
         </a>
-        <a class="product-card" href="https://tally.so/r/Bzr1qN" target="_blank" rel="noopener">
+        <a class="product-card" href="https://kanal.totat.my.id">
           <div class="pname">Kanal</div>
           <span class="product-badge soon">Segera Hadir</span>
         </a>
-        <a class="product-card" href="https://tally.so/r/Bzr1qN" target="_blank" rel="noopener">
+        <a class="product-card" href="https://kirim.totat.my.id">
           <div class="pname">Kirim</div>
           <span class="product-badge soon">Segera Hadir</span>
         </a>
-        <a class="product-card" href="https://tally.so/r/Bzr1qN" target="_blank" rel="noopener">
+        <a class="product-card" href="https://jaringan.totat.my.id">
           <div class="pname">Jaringan</div>
           <span class="product-badge soon">Segera Hadir</span>
         </a>
-        <a class="product-card" href="https://tally.so/r/Bzr1qN" target="_blank" rel="noopener">
+        <a class="product-card" href="https://investor.totat.my.id">
           <div class="pname">Investor</div>
           <span class="product-badge soon">Segera Hadir</span>
         </a>
-        <a class="product-card" href="https://tally.so/r/Bzr1qN" target="_blank" rel="noopener">
+        <a class="product-card" href="https://distribusi.totat.my.id">
           <div class="pname">Distribusi</div>
           <span class="product-badge soon">Segera Hadir</span>
         </a>
-        <a class="product-card" href="https://tally.so/r/Bzr1qN" target="_blank" rel="noopener">
+        <a class="product-card" href="https://karir.totat.my.id">
           <div class="pname">Karir</div>
           <span class="product-badge soon">Segera Hadir</span>
         </a>
@@ -191,9 +223,6 @@ footer{padding:28px 0;}
 <footer>
   <div class="wrap foot-row">
     <span>&copy; 2026 PT Catat Mapan &middot; Catat usahamu, mapankan hidupmu.</span>
-    <div class="foot-links">
-      <a href="https://chat.whatsapp.com/GLmk1xTigpO6uGLoDk4z8z" target="_blank" rel="noopener">WA Community</a>
-    </div>
   </div>
 </footer>
 
