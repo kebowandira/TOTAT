@@ -60,72 +60,61 @@ Existing Caddy systemd config ← check before any Caddy changes
 
 ## Current Status
 - TOTAT app: LIVE at warungbeta.totat.my.id via Hercules (NOT on NL1 yet)
-- Landing pages (totat.my.id + all [modul].totat.my.id): LIVE on Cloudflare
-  Workers (wrangler.jsonc + worker.js host-routing, NOT NL1, NOT classic
-  Pages `_redirects`) — confirmed working by BuLe 2026-09-17 after a
-  browser cache clear. **MIGRATION IN PROGRESS to CF Pages Classic — see
-  below.**
+- Landing pages (totat.my.id + all [modul].totat.my.id): LIVE on 13
+  separate Cloudflare Pages Classic projects (one per subdomain, each
+  with `Root directory` set to its own `sites/[modul]` folder, no
+  Functions/Workers logic) — migration completed 2026-09-17, confirmed
+  live by BuLe via Tor Browser (cache/CDN-proof check) on every
+  subdomain. The old single-Worker host-routing setup
+  (wrangler.jsonc/worker.js) is retired — see `wrangler.jsonc.bak` /
+  `worker.js.bak` if a future dynamic API Worker is ever built.
 - KNOWN GOTCHA: the Cloudflare dashboard's own "Deployments" build status
   can show a stale "Latest build failed" long after a fix has shipped and
   is live. Don't trust that tab at face value — check the live site
-  (clear cache first) or the GitHub Actions/Git-integration deploy result
-  before concluding something is actually broken.
+  (clear cache first) or the Git-integration deploy result before
+  concluding something is actually broken.
 - NL1 role: context server (context.totat.my.id) + future self-host (Sep
   2027) — NL1 does NOT serve totat.my.id landing pages (decommissioned,
   see PR #4)
 - /opt/totat/ may not exist yet — check before assuming
 
 
-## MIGRATION IN PROGRESS: Workers → per-subdomain CF Pages Classic
-Started 2026-09-17. NOT YET COMPLETE — see checklist below before
-assuming either architecture is authoritative.
+## Landing page architecture: 13 Cloudflare Pages Classic projects
+COMPLETE as of 2026-09-17. Each subdomain is its own independent Pages
+project connected to this repo (`kebowandira/TOTAT`, branch `main`),
+Root directory pointed at its own `sites/[modul]` folder, no build
+command, no Functions — zero request-time logic, genuinely unlimited
+free static requests (verified against Cloudflare's pricing docs: this
+only holds when a project has no Functions/Workers invoked per request).
 
-**Why:** all landing pages are plain static HTML with real cross-domain
-`<a href>` links (no client routing, no server logic needed). Cloudflare
-Pages Classic gives unlimited free static-asset requests when a project
-has zero Functions/Workers logic — better fit than the current Worker,
-which is metered against the 100,000 req/day Workers Free plan even
-though it does no real work besides a hostname→path rewrite.
+| Domain | Root directory | Status |
+|---|---|---|
+| totat.my.id (+www) | `sites/main` | live |
+| warung.totat.my.id | `sites/warung` | live |
+| cafe.totat.my.id | `sites/cafe` | live |
+| sewa.totat.my.id | `sites/sewa` | live |
+| tamu.totat.my.id | `sites/tamu` | live |
+| jasa.totat.my.id | `sites/jasa` | live |
+| talent.totat.my.id | `sites/talent` | live |
+| kanal.totat.my.id | `sites/kanal` | live |
+| kirim.totat.my.id | `sites/kirim` | live |
+| jaringan.totat.my.id | `sites/jaringan` | live |
+| investor.totat.my.id | `sites/investor` | live |
+| distribusi.totat.my.id | `sites/distribusi` | live |
+| karir.totat.my.id | `sites/karir` | live |
 
-**Rejected approach (do not attempt):** one Pages project with all 13+
-domains attached as Custom Domains, "routed by path." Verified against
-Cloudflare's own docs — Pages custom domains have no per-domain path
-mapping, and any routing fix requires a Pages Function, which then bills
-identically to Workers and defeats the point.
+(Exact Cloudflare project names vary slightly from `sites/` folder names
+— e.g. `totatcafe`, `totatwarung` — check the Cloudflare dashboard for
+the authoritative project list; the Root directory → domain mapping
+above is what matters for the repo.)
 
-**Chosen approach:** one Pages project PER subdomain, each with `Root
-directory` set to its own `sites/[modul]` folder, no build command, no
-Functions — zero request-time logic anywhere.
+**NEVER attach `warungbeta.totat.my.id` to any of these Pages projects**
+— it's served by Hercules, not this repo.
 
-| Pages project | Root directory | Custom domain | Cutover status |
-|---|---|---|---|
-| totat-main | `sites/main` | totat.my.id (+www) | pending |
-| totat-warung | `sites/warung` | warung.totat.my.id | pending |
-| totat-cafe | `sites/cafe` | cafe.totat.my.id | pending |
-| totat-sewa | `sites/sewa` | sewa.totat.my.id | pending |
-| totat-tamu | `sites/tamu` | tamu.totat.my.id | pending |
-| totat-jasa | `sites/jasa` | jasa.totat.my.id | pending |
-| totat-talent | `sites/talent` | talent.totat.my.id | pending |
-| totat-kanal | `sites/kanal` | kanal.totat.my.id | pending |
-| totat-kirim | `sites/kirim` | kirim.totat.my.id | pending |
-| totat-jaringan | `sites/jaringan` | jaringan.totat.my.id | pending |
-| totat-investor | `sites/investor` | investor.totat.my.id | pending |
-| totat-distribusi | `sites/distribusi` | distribusi.totat.my.id | pending |
-| totat-karir | `sites/karir` | karir.totat.my.id | pending |
-
-Each domain must be detached from the current "totat" Worker before it
-can be attached to its Pages project — cut over one domain at a time and
-verify before moving to the next. **NEVER attach `warungbeta.totat.my.id`
-to any Pages project** — it's served by Hercules, not this repo.
-
-**HARD RULE — do not rename/delete `wrangler.jsonc` or `worker.js`, and do
-not delete the "totat" Worker project, until every row above reads
-"live" and has been verified with a fresh (cache-cleared) request, not
-just "looks fine in browser."** They are the live fallback until cutover
-is fully confirmed. Once complete: rename (not delete —
-kept for a possible future dynamic API Worker) to `wrangler.jsonc.bak` /
-`worker.js.bak`, delete the Worker's custom domain routes, and update
-this section to COMPLETE with the actual completion date.
+**Adding a new module in future:** create one more Pages project the
+same way (Import Git repo → Root directory `sites/[modul]` → attach
+`[modul].totat.my.id`). There is no shared routing file to edit anymore
+— each subdomain is fully independent.
 
 
 ## context.totat.my.id — Auth

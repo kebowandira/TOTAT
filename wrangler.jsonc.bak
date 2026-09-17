@@ -1,6 +1,6 @@
-// LIVE FALLBACK — do not rename/delete until the CF Pages Classic cutover
-// in CLAUDE.md ("MIGRATION IN PROGRESS") is fully confirmed. See that
-// file for the per-domain checklist before touching this.
+// RETIRED 2026-09-17 — superseded by 13 separate Cloudflare Pages Classic
+// projects (see CLAUDE.md). Kept only in case a future dynamic API
+// Worker is built; not used for landing-page routing anymore.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "totat",

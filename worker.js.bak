@@ -1,6 +1,6 @@
-// LIVE FALLBACK — do not rename/delete until the CF Pages Classic cutover
-// in CLAUDE.md ("MIGRATION IN PROGRESS") is fully confirmed for every
-// domain. See that file for the per-domain checklist.
+// RETIRED 2026-09-17 — superseded by 13 separate Cloudflare Pages Classic
+// projects, one per subdomain (see CLAUDE.md). Kept only as a reference
+// in case a future dynamic API Worker is built; not deployed anymore.
 //
 // Routes each TOTAT subdomain to its own sites/[module]/ folder.
 // Needed because Workers static-asset routing matches request PATH against
