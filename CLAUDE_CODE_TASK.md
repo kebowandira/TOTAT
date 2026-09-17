@@ -1,4 +1,17 @@
-# TASK: Deploy TOTAT landing page to NL1
+# TASK: Deploy TOTAT landing page to NL1 — SUPERSEDED, kept for history
+
+**This entire plan no longer applies.** BuLe decided (2026-09-17) to
+standardize on Cloudflare Pages for all landing pages — less load on
+NL1, and it's already working (see `sites/` + PR #3, merged). The root
+`index.html`, `assets/`, and `deploy/Caddyfile.totat-site` this file
+references have been deleted from the repo; NL1 no longer serves
+`totat.my.id` in any form, redirect included.
+
+NL1's actual remaining scope is `context.totat.my.id` / `api.totat.my.id`
+(dynamic services) and the eventual 2027 self-host migration — see
+`TOTAT_ClaudeCode_Master_v5.md` Task 5 (GDrive) for that, not this file.
+
+Kept below only as a record of what was tried and why it changed.
 
 ## Context for Claude Code
 This is a static HTML deployment task on an existing VPS (NL1) that

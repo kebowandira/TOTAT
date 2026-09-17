@@ -1,4 +1,17 @@
-# TOTAT Landing Page — VPS Deployment Guide
+# TOTAT Landing Page — VPS Deployment Guide — SUPERSEDED, kept for history
+
+**This guide no longer applies.** BuLe decided (2026-09-17) to
+standardize on Cloudflare Pages for all landing pages instead — less
+load on NL1, and it's already working (`sites/` + PR #3, merged). The
+files this guide references (root `index.html`, `assets/`,
+`deploy/Caddyfile.totat-site`) have been deleted from the repo. NL1 does
+not serve `totat.my.id` in any form.
+
+NL1's remaining scope is `context.totat.my.id`/`api.totat.my.id` and the
+eventual 2027 self-host migration — see `TOTAT_ClaudeCode_Master_v5.md`
+Task 5 (GDrive), not this file.
+
+Kept below only as a record of what was tried and why it changed.
 
 This is a **static HTML file**. No database, no app server, no build step.
 That is deliberate — it minimizes attack surface. The security of this
