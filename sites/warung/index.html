@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TOTAT Warung — Kasir warung di HP kamu</title>
+<meta name="description" content="Gratis selamanya. Offline-first. Tidak perlu akuntansi. Daftar jadi beta tester TOTAT Warung sekarang."/>
+<link rel="canonical" href="https://warung.totat.my.id/"/>
+<meta name="theme-color" content="#2A9D8F"/>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 13L16 5L28 13V27C28 27.55 27.55 28 27 28H5C4.45 28 4 27.55 4 27V13Z' fill='%232A9D8F'/%3E%3Crect x='8' y='18' width='16' height='4' rx='1' fill='white'/%3E%3Ccircle cx='11' cy='24' r='1.4' fill='white'/%3E%3Ccircle cx='16' cy='24' r='1.4' fill='white'/%3E%3Ccircle cx='21' cy='24' r='1.4' fill='white'/%3E%3C/svg%3E"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://warung.totat.my.id/"/>
+<meta property="og:site_name" content="TOTAT Warung"/>
+<meta property="og:locale" content="id_ID"/>
+<meta property="og:title" content="TOTAT Warung — Kasir warung di HP kamu"/>
+<meta property="og:description" content="Gratis selamanya. Offline-first. Tidak perlu akuntansi."/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="TOTAT Warung — Kasir warung di HP kamu"/>
+<meta name="twitter:description" content="Gratis selamanya. Offline-first. Tidak perlu akuntansi."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#2A9D8F;
+  --teal-dark:#1F7A6E;
+  --teal-light:#E6F4F2;
+  --ink:#1C2B29;
+  --gray:#6B7280;
+  --white:#FFFFFF;
+  --paper:#FAFAF8;
+  --rule: rgba(28,43,41,0.12);
+  --sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#EDEFEE;--paper:#14201E;--teal-light:#173330;--rule: rgba(237,239,238,0.14);--gray:#9BA3A8;--white:#1A2624;
+  }
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;}
+a{color:inherit;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+@media (max-width:640px){ .wrap{padding:0 20px;} }
+
+header{position:sticky;top:0;z-index:40;background:color-mix(in srgb, var(--paper) 88%, transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--rule);}
+.header-row{display:flex;align-items:center;justify-content:space-between;padding:16px 0;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-0.01em;text-decoration:none;}
+.brand-mark{width:30px;height:30px;flex:none;}
+.brand-o{color:var(--teal);}
+.brand-sub{font-size:12.5px;font-weight:600;color:var(--gray);border-left:1px solid var(--rule);padding-left:10px;margin-left:2px;}
+
+.hero{padding:64px 0 48px;border-bottom:1px solid var(--rule);text-align:center;}
+h1{font-weight:800;font-size:clamp(30px,5.5vw,48px);line-height:1.12;letter-spacing:-0.02em;margin:0 0 16px;}
+.hero-sub{font-size:17px;color:var(--gray);max-width:44ch;margin:0 auto;}
+
+section{padding:56px 0;border-bottom:1px solid var(--rule);}
+.section-label{font-size:13px;font-weight:700;color:var(--teal-dark);margin-bottom:10px;text-align:center;}
+h2{font-weight:800;font-size:clamp(22px,3vw,28px);letter-spacing:-0.01em;margin:0 0 32px;text-align:center;}
+
+.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:12px;overflow:hidden;}
+@media (max-width:760px){ .feature-grid{grid-template-columns:1fr 1fr;} }
+.feature{background:var(--paper);padding:26px 20px;text-align:center;}
+.feature .emoji{font-size:28px;margin-bottom:10px;}
+.feature .k{font-weight:700;font-size:15px;margin-bottom:8px;}
+.feature p{margin:0;font-size:13.5px;color:var(--gray);}
+
+.why-list{max-width:420px;margin:0 auto;list-style:none;padding:0;}
+.why-list li{display:flex;align-items:center;gap:12px;padding:10px 0;font-size:15.5px;}
+.why-list .check{color:var(--teal);font-weight:800;}
+
+.cta-section{background:var(--ink);color:var(--paper);border-bottom:none;text-align:center;}
+.cta-section h2{color:var(--paper);}
+.cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:16px;padding:14px 28px;border-radius:9px;text-decoration:none;transition:background .15s, border-color .15s;}
+.btn-primary{background:var(--teal);color:#fff;}
+.btn-primary:hover{background:#3BB5A6;}
+.btn-ghost{background:transparent;border:1.5px solid rgba(250,250,248,.3);color:var(--paper);}
+.btn-ghost:hover{border-color:var(--paper);}
+.wa-link{display:block;margin-top:20px;font-size:14px;color:rgba(250,250,248,.7);text-decoration:none;}
+.wa-link:hover{color:var(--paper);}
+
+footer{padding:28px 0;}
+.foot-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--gray);}
+.foot-row a{text-decoration:none;color:var(--gray);}
+.foot-row a:hover{color:var(--ink);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-row">
+    <a href="https://totat.my.id" class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 13L16 5L28 13V27C28 27.55 27.55 28 27 28H5C4.45 28 4 27.55 4 27V13Z" fill="#2A9D8F"/>
+        <rect x="8" y="18" width="16" height="4" rx="1" fill="white"/>
+        <circle cx="11" cy="24" r="1.4" fill="white"/>
+        <circle cx="16" cy="24" r="1.4" fill="white"/>
+        <circle cx="21" cy="24" r="1.4" fill="white"/>
+      </svg>
+      TOT<span class="brand-o">A</span>T
+      <span class="brand-sub">Warung</span>
+    </a>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="wrap">
+      <h1>Kasir warung di HP kamu.</h1>
+      <p class="hero-sub">Gratis selamanya. Offline-first. Tidak perlu akuntansi.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="feature-grid">
+        <div class="feature">
+          <div class="emoji">🛒</div>
+          <div class="k">Kasir</div>
+          <p>Catat penjualan dalam detik</p>
+        </div>
+        <div class="feature">
+          <div class="emoji">📦</div>
+          <div class="k">Stok</div>
+          <p>Stok otomatis berkurang saat jual</p>
+        </div>
+        <div class="feature">
+          <div class="emoji">👥</div>
+          <div class="k">Hutang</div>
+          <p>Catat hutang + reminder WA ke pelanggan</p>
+        </div>
+        <div class="feature">
+          <div class="emoji">📊</div>
+          <div class="k">Laporan</div>
+          <p>Lihat untung hari ini langsung dari beranda</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="section-label">MENGAPA TOTAT</div>
+      <h2>Dibangun untuk warung, bukan startup.</h2>
+      <ul class="why-list">
+        <li><span class="check">&#10003;</span> Gratis selamanya (bukan trial)</li>
+        <li><span class="check">&#10003;</span> Jalan tanpa internet</li>
+        <li><span class="check">&#10003;</span> Tidak perlu belajar akuntansi</li>
+        <li><span class="check">&#10003;</span> Dari HP Android biasa</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="wrap">
+      <h2>Coba sekarang, gratis.</h2>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://tally.so/r/Bzr1qN" target="_blank" rel="noopener">Daftar Beta Tester Gratis →</a>
+        <a class="btn btn-ghost" href="https://warungbeta.totat.my.id" target="_blank" rel="noopener">Sudah terdaftar? Buka App →</a>
+      </div>
+      <a class="wa-link" href="https://chat.whatsapp.com/GLmk1xTigpO6uGLoDk4z8z" target="_blank" rel="noopener">Gabung Komunitas WhatsApp</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot-row">
+    <a href="https://totat.my.id">← kembali ke totat.my.id</a>
+    <span>PT Catat Mapan</span>
+  </div>
+</footer>
+
+</body>
+</html>
