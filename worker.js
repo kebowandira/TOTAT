@@ -1,3 +1,7 @@
+// LIVE FALLBACK — do not rename/delete until the CF Pages Classic cutover
+// in CLAUDE.md ("MIGRATION IN PROGRESS") is fully confirmed for every
+// domain. See that file for the per-domain checklist.
+//
 // Routes each TOTAT subdomain to its own sites/[module]/ folder.
 // Needed because Workers static-asset routing matches request PATH against
 // one shared assets directory — with many custom domains on this single

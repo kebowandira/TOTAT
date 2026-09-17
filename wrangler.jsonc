@@ -1,3 +1,6 @@
+// LIVE FALLBACK — do not rename/delete until the CF Pages Classic cutover
+// in CLAUDE.md ("MIGRATION IN PROGRESS") is fully confirmed. See that
+// file for the per-domain checklist before touching this.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "totat",
