@@ -60,7 +60,19 @@ Existing Caddy systemd config ← check before any Caddy changes
 
 ## Current Status
 - TOTAT app: LIVE at warungbeta.totat.my.id via Hercules (NOT on NL1 yet)
-- NL1 role: context server + landing pages + future self-host (Sep 2027)
+- Landing pages (totat.my.id + all [modul].totat.my.id): LIVE on Cloudflare
+  Workers (wrangler.jsonc + worker.js host-routing, NOT NL1, NOT classic
+  Pages `_redirects`) — confirmed working by BuLe 2026-09-17 after a
+  browser cache clear.
+- KNOWN GOTCHA: the Cloudflare dashboard's own "Deployments" build status
+  can show a stale "Latest build failed" long after a fix has shipped and
+  is live (confirmed separately via the Workers API). Don't trust that
+  tab at face value — check the live site (clear cache first) or the
+  GitHub Actions deploy result before concluding something is actually
+  broken.
+- NL1 role: context server (context.totat.my.id) + future self-host (Sep
+  2027) — NL1 does NOT serve totat.my.id landing pages (decommissioned,
+  see PR #4)
 - /opt/totat/ may not exist yet — check before assuming
 
 
