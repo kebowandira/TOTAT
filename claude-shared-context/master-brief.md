@@ -121,7 +121,23 @@ Context: /opt/totat/context/ ← context.totat.my.id
 Scripts: /opt/totat/scripts/
 
 
-## 11. KEY LINKS
+## 11. CF PAGES — REDIRECTS (Added Sep 17, 2026)
+Architecture: 13 separate Cloudflare Pages Classic projects, one per
+subdomain, each with its own `_redirects` file inside its own
+`sites/[modul]/` folder (see repo CLAUDE.md's "Landing page architecture"
+section for the full domain → project mapping).
+- _redirects: wildcard fallback `/* /index.html 200` in every project —
+  an unknown path under a subdomain rewrites to THAT subdomain's own
+  homepage, not the main totat.my.id page, so each module stays
+  self-contained.
+- 404.html: intentionally skipped. The wildcard rewrite always returns
+  HTTP 200, so a custom 404 page would never actually render — adding
+  one would be dead code.
+- Next: once a module's landing page grows beyond a single index.html,
+  add specific routes to that module's own _redirects file.
+
+
+## 12. KEY LINKS
 App beta: https://warungbeta.totat.my.id
 Form tester: https://tally.so/r/Bzr1qN
 Form feedback: https://tally.so/r/Y51OEv

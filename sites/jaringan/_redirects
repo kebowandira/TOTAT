@@ -1,0 +1,3 @@
+# TOTAT CF Pages — redirect rules
+# Wildcard fallback: unknown paths → this module's own homepage (friendlier than a generic 404)
+/*    /index.html    200
