@@ -60,8 +60,61 @@ Existing Caddy systemd config ← check before any Caddy changes
 
 ## Current Status
 - TOTAT app: LIVE at warungbeta.totat.my.id via Hercules (NOT on NL1 yet)
-- NL1 role: context server + landing pages + future self-host (Sep 2027)
+- Landing pages (totat.my.id + all [modul].totat.my.id): LIVE on 13
+  separate Cloudflare Pages Classic projects (one per subdomain, each
+  with `Root directory` set to its own `sites/[modul]` folder, no
+  Functions/Workers logic) — migration completed 2026-09-17, confirmed
+  live by BuLe via Tor Browser (cache/CDN-proof check) on every
+  subdomain. The old single-Worker host-routing setup
+  (wrangler.jsonc/worker.js) is retired — see `wrangler.jsonc.bak` /
+  `worker.js.bak` if a future dynamic API Worker is ever built.
+- KNOWN GOTCHA: the Cloudflare dashboard's own "Deployments" build status
+  can show a stale "Latest build failed" long after a fix has shipped and
+  is live. Don't trust that tab at face value — check the live site
+  (clear cache first) or the Git-integration deploy result before
+  concluding something is actually broken.
+- NL1 role: context server (context.totat.my.id) + future self-host (Sep
+  2027) — NL1 does NOT serve totat.my.id landing pages (decommissioned,
+  see PR #4)
 - /opt/totat/ may not exist yet — check before assuming
+
+
+## Landing page architecture: 13 Cloudflare Pages Classic projects
+COMPLETE as of 2026-09-17. Each subdomain is its own independent Pages
+project connected to this repo (`kebowandira/TOTAT`, branch `main`),
+Root directory pointed at its own `sites/[modul]` folder, no build
+command, no Functions — zero request-time logic, genuinely unlimited
+free static requests (verified against Cloudflare's pricing docs: this
+only holds when a project has no Functions/Workers invoked per request).
+
+| Domain | Root directory | Status |
+|---|---|---|
+| totat.my.id (+www) | `sites/main` | live |
+| warung.totat.my.id | `sites/warung` | live |
+| cafe.totat.my.id | `sites/cafe` | live |
+| sewa.totat.my.id | `sites/sewa` | live |
+| tamu.totat.my.id | `sites/tamu` | live |
+| jasa.totat.my.id | `sites/jasa` | live |
+| talent.totat.my.id | `sites/talent` | live |
+| kanal.totat.my.id | `sites/kanal` | live |
+| kirim.totat.my.id | `sites/kirim` | live |
+| jaringan.totat.my.id | `sites/jaringan` | live |
+| investor.totat.my.id | `sites/investor` | live |
+| distribusi.totat.my.id | `sites/distribusi` | live |
+| karir.totat.my.id | `sites/karir` | live |
+
+(Exact Cloudflare project names vary slightly from `sites/` folder names
+— e.g. `totatcafe`, `totatwarung` — check the Cloudflare dashboard for
+the authoritative project list; the Root directory → domain mapping
+above is what matters for the repo.)
+
+**NEVER attach `warungbeta.totat.my.id` to any of these Pages projects**
+— it's served by Hercules, not this repo.
+
+**Adding a new module in future:** create one more Pages project the
+same way (Import Git repo → Root directory `sites/[modul]` → attach
+`[modul].totat.my.id`). There is no shared routing file to edit anymore
+— each subdomain is fully independent.
 
 
 ## context.totat.my.id — Auth
