@@ -80,6 +80,21 @@ contact links already live) and should not be regenerated.
    plan that was based on a wrong assumption about what NL1 runs).
 4. `DEPLOY_STEPS.md` — the full manual walkthrough this brief is based
    on; use it as reference if any step here is ambiguous.
+5. `claude-shared-context/` (`master-brief.md`, `master-brief-short.md`,
+   `schema.sql`, `conventions.md`) and root-level `AGENTS.md`/`CLAUDE.md`
+   — the multi-AI context bundle per `TOTAT_AI_Master_Guide_v2.md`
+   (GDrive). Not part of the landing-page deploy itself; relevant if a
+   future task wires up `context.totat.my.id` to sync from this repo.
+
+**Caddy block conflict, resolve before merging:** if `nl1-setup.sh` (GDrive
+foundation folder) has already run on NL1, it generates its own
+`totat.my.id { ... }` block in `/opt/totat/caddy/totat-blocks.caddy`
+pointing at `/opt/totat/sites/main` with no security headers and no
+`www.totat.my.id` handling. **Use `deploy/Caddyfile.totat-site` from this
+repo instead for that domain** — it's the more complete definition. Merge
+the rest of `totat-blocks.caddy` (other subdomains, `context.totat.my.id`,
+`app.totat.my.id`) normally; just don't merge both `totat.my.id` blocks or
+Caddy will reject the duplicate address on validate.
 
 ## What to actually do, in order
 1. Run the live verification commands above; reconcile against this doc.
