@@ -113,13 +113,19 @@ Tables:
 Full: https://context.totat.my.id/conventions.md
 
 
-## 10. INFRASTRUCTURE (NL1)
+## 10. INFRASTRUCTURE (NL1) — UPDATED Sep 2026
 IP: 92.112.126.231 (DeluxHost, Ubuntu 24.04, 4core/8GB)
 Caddy: /opt/totat/caddy/Caddyfile
-Sites: /opt/totat/sites/[modul]/
-Apps: /opt/totat/apps/[modul]/
+Landing pages: NOT on NL1 — moved to 13 separate Cloudflare Pages
+  Classic projects (one per subdomain, see repo CLAUDE.md "Landing page
+  architecture"). NL1 does not serve totat.my.id in any form.
 Context: /opt/totat/context/ ← context.totat.my.id
 Scripts: /opt/totat/scripts/
+AI stack: /opt/totat/ai-stack/ (Docker Compose) — see §14-16. Planned
+  items in §15 are NOT deployed yet; treat as unverified until a Phase
+  0 audit confirms them on the box itself.
+Apps: /opt/totat/apps/[modul]/ — future self-host target (~Sep 2027,
+  see §2), not live yet; beta app runs on Hercules, not NL1.
 
 
 ## 11. CF PAGES — REDIRECTS (Added Sep 17, 2026)
@@ -139,10 +145,14 @@ section for the full domain → project mapping).
 
 
 ## 12. KEY LINKS
-App beta: https://warungbeta.totat.my.id
+App beta: https://warungbeta.totat.my.id (invite-only for now — Beta links
+  on the public landing pages route to the tester form, not this URL
+  directly; see sites/main and sites/warung)
 Form tester: https://tally.so/r/Bzr1qN
 Form feedback: https://tally.so/r/Y51OEv
-WA Community: https://chat.whatsapp.com/GLmk1xTigpO6uGLoDk4z8z
+WA Community: https://chat.whatsapp.com/GLmk1xTigpO6uGLoDk4z8z (NOT
+  currently linked from any live page — held back per BuLe, "Group WA
+  juga nanti"; do not re-add to landing pages without checking first)
 GDrive Foundation: https://drive.google.com/drive/folders/1u5dWXJF6eDGy4rkBU3WrLAbxx7J7UWNI
 Context server: https://context.totat.my.id/
 
@@ -206,7 +216,7 @@ flow runs without any API call. Offline-first → on-device first (UX rule 5).
 |---|---|---|
 | P1B Struk OCR (Okt 2026) | tesseract.js + Bahasa traineddata | On-device, offline (primary) |
 | Struk OCR online fallback | Gemini Flash API | Enhancement only, pay-per-use |
-| Future text features | DeepSeek API | Pay-per-use (~$0.28/M in, $0.42/M out); text-only |
+| Future text features | DeepSeek API | Pay-per-use (~$0.28/M in, $0.42/M out — UNVERIFIED, check DeepSeek's current pricing page before relying on this); text-only |
 | Vision fallback chain | Gemini Flash → GLM-4.5V → Qwen-VL | Via OpenRouter, hot-swappable |
 
 ## 15. SELF-HOST STACK — NL1 (92.112.126.231, Ubuntu 24.04, 4c/8GB)
@@ -241,15 +251,19 @@ Conventions (all self-host services):
 - DNS automation: Cloudflare API token scoped Zone:DNS:Edit totat.my.id ONLY;
   A records grey-cloud (Caddy TLS); never overwrite/delete existing records;
   planned helper: /opt/totat/scripts/cf-dns-add.sh.
-- Caddy: one site file per subdomain (LinguaKid pattern), imported by BOTH
-  Caddyfile and Caddyfile.promoted; validate before graceful reload; never restart.
+- Caddy: one site file per subdomain (LinguaKid pattern — LinguaKid is a
+  separate, unrelated BuLe project; this just borrows its Caddy file
+  layout convention), imported by BOTH Caddyfile and Caddyfile.promoted;
+  validate before graceful reload; never restart.
 - Guardrails: zero prod DB credentials to agents; API spend caps (OpenRouter
   $5/mo key limit; DeepSeek manual top-up); abort gates (disk <10GB, RAM >6GB).
 - Updates: image pulls auto w/ health-gate + rollback; AGENT self-update stays
   manual monthly (release notes first).
 
 DNS:
-- agent.totat.my.id → 92.112.126.231 (created during Hermes deploy, grey cloud)
+- agent.totat.my.id → NOT created yet. Will point to 92.112.126.231
+  (grey cloud) as part of the Hermes deploy's Caddy phase — do not
+  assume this record exists until a Phase 0 audit confirms it.
 - context.totat.my.id → NOT created; context server = separate future task
 
 ## 16. AI DECISION LOG (why — so future sessions don't re-litigate)
@@ -262,8 +276,3 @@ DNS:
   tesseract.js primary + Gemini Flash fallback.
 - All-in-one consumer platforms (Krater/Poe/Monica) not adopted: no API/white-
   label value; OpenRouter + targeted subs cover the need at lower cost.
-
----
-
-Commit message: "Add Convex schema verification + AI roster for self-host migration"
-Branch: main (direct commit OK, no PR needed for docs update)
