@@ -1,4 +1,4 @@
-﻿# TOTAT — CLAUDE.md
+# TOTAT — CLAUDE.md
 # Place at: /opt/totat/CLAUDE.md on NL1
 # Claude Code reads this automatically in every session in this directory
 # GDrive: https://drive.google.com/drive/folders/1u5dWXJF6eDGy4rkBU3WrLAbxx7J7UWNI
@@ -34,6 +34,7 @@ capacity-planning factor: NL1 is only 8GB RAM total, already shared
 with Caddy, the Dasabo warm-standby mirror, and (eventually, ~Sep 2027)
 a possible TOTAT self-host — don't assume unlimited headroom for all of
 these running at once.
+
 AI roster v2 + self-host stack: master-brief.md §14-16. Planned =/= installed —
 audit NL1 (Phase 0 style) before assuming any service/file/DNS exists.
 
