@@ -56,6 +56,7 @@ Components: shadcn/ui — /src/components/ui/
 - Free = benar-benar full function, BUKAN freemium
 - Premium = complexity layer (multi-outlet, investor view)
 - JANGAN lock fitur dasar di balik paywall
+- Offline-first — target untuk v2 self-host. Beta butuh koneksi internet ke hercules app.
 
 
 ## 6. PRODUCT FAMILY
