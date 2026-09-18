@@ -19,6 +19,22 @@ SSH user: bule
 Caddy: systemd-managed, existing config — SEE CADDY RULES BELOW
 Structure: /opt/totat/
 
+Also runs a free/self-hosted AI agent stack (added by BuLe, Sep 2026,
+per BuLe: intended to help develop TOTAT) in /opt/totat/ai-stack/ — a
+Docker Compose setup, plus a "search."/"ai." Caddy block already in the
+existing Caddyfile. As of this note, a Nous Research "Hermes Agent"
+install was being planned on top of it (dedicated non-sudo `hermes`
+user, Telegram-only gateway, OpenRouter/DeepSeek backends, browser
+tool) — NOT verified complete or actually running from this repo's
+side; this session has no SSH/server access to NL1, so treat exact
+state (what's installed, what's live, ports, RAM headroom) as
+BuLe-reported until confirmed from a session with real NL1 access.
+Relevant if TOTAT dev work ever wants to use this agent, and as a
+capacity-planning factor: NL1 is only 8GB RAM total, already shared
+with Caddy, the Dasabo warm-standby mirror, and (eventually, ~Sep 2027)
+a possible TOTAT self-host — don't assume unlimited headroom for all of
+these running at once.
+
 
 ## CADDY RULES — READ BEFORE ANY CADDY COMMAND
 NL1 already runs a systemd-managed Caddy instance serving other sites.
