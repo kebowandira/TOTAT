@@ -39,6 +39,30 @@ AI roster v2 + self-host stack: master-brief.md §14-16. Planned =/= installed �
 audit NL1 (Phase 0 style) before assuming any service/file/DNS exists.
 
 
+## GDrive Sync — SEPARATE server, NOT NL1
+Per BuLe (reported from a different session on a different box — this
+session has no access to it, treat as unverified until confirmed
+live): a second server at 102.215.228.85 (SSH user bule, port 2298,
+key ~/.ssh/id1_v3) runs an `rclone` remote named `gdrive`. This is the
+practical workaround for the long-standing "GDrive foundation folder is
+behind GitHub" gap — the Google Drive tools available to Claude
+sessions can rename/move files but cannot write file *content*, so
+this rclone setup is the actual sync mechanism.
+
+Status as of this note:
+- rclone `gdrive` remote configured; a sync command was dry-run tested
+  clean, but NOT yet run for real.
+- Source dir `/home/bule/shared-context/` exists on that server but is
+  currently EMPTY — what content actually goes there is still
+  undecided (open next step, not this repo's decision to make alone).
+- KNOWN GOTCHA: on that box, `rclone`/`scp` commands get auto-denied by
+  the permission system as looking like data exfiltration, and a
+  session can't self-edit its own `settings.local.json` to allow-list
+  them either. Future sessions there should hand BuLe the exact command
+  to run themselves rather than retry it. A suggested allow-rule JSON
+  snippet exists (from that session) but hasn't been added yet.
+
+
 ## CADDY RULES — READ BEFORE ANY CADDY COMMAND
 NL1 already runs a systemd-managed Caddy instance serving other sites.
 NEVER run: caddy start (would conflict with existing instance)
