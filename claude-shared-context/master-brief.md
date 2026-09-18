@@ -1,4 +1,4 @@
-﻿# TOTAT — Master Brief (Full)
+# TOTAT — Master Brief (Full)
 # PT Catat Mapan | Owner: BuLe (one-man-show)
 # Tagline: "Catat usahamu, mapankan hidupmu"
 # Last updated: Sep 2026
@@ -144,3 +144,40 @@ Form feedback: https://tally.so/r/Y51OEv
 WA Community: https://chat.whatsapp.com/GLmk1xTigpO6uGLoDk4z8z
 GDrive Foundation: https://drive.google.com/drive/folders/1u5dWXJF6eDGy4rkBU3WrLAbxx7J7UWNI
 Context server: https://context.totat.my.id/
+
+
+## 13. CONVEX DB — VERIFIED Sep 18, 2026
+
+### Schema (confirmed from Hercules dashboard)
+Tables: hutang, itemPembelianStok, itemPenjualan, kasAwal, pelanggan,
+pembelianStok, penjualan, penyesuaianStok, produk, supplier, users
+Functions: backup, kasAwal, pelanggan, pembelianStok, penjualan, produk, supplier, users
+File Storage: Convex Files (foto pelanggan + foto nota)
+
+### Auth mechanism
+Data linked to Google user via users:getCurrentUser (Convex auth).
+NOT device UUID. Wipe/reinstall → login same Google → data intact.
+D-2 re-link screen: trivial (email → Convex user lookup).
+
+---
+
+## 14. AI ROSTER — SELF-HOST MIGRATION (Keroyokan AI)
+
+| AI | Role | Scope |
+|---|---|---|
+| Claude chat | Controller / Architect | Architecture decisions, prompts, memory, audit |
+| Claude Code | Infra & Backend | NL1, Supabase migration, API, CI/CD, Git |
+| Gemini Plus | Schema + Long Context | Convex→Supabase mapping, large doc analysis |
+| Jules (Google) | Frontend async | React components per module via GitHub issues |
+| ChatGPT | UI fallback + QA | Components, acceptance test generation |
+| Z.ai | Product spec + Copy | Onboarding UX, consent copy, CP-T0 kit |
+| Grok | Research | Marketplace API docs, regulatory, competitive intel |
+| Hercules | Blueprint factory | Phase 2-3 beta builds, framework validation |
+
+Controller: Claude chat. Executor: Claude Code.
+Claude Pro limit strategy: Claude chat for decisions only — heavy output to Gemini Plus or Jules.
+
+---
+
+Commit message: "Add Convex schema verification + AI roster for self-host migration"
+Branch: main (direct commit OK, no PR needed for docs update)
