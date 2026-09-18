@@ -34,6 +34,8 @@ capacity-planning factor: NL1 is only 8GB RAM total, already shared
 with Caddy, the Dasabo warm-standby mirror, and (eventually, ~Sep 2027)
 a possible TOTAT self-host — don't assume unlimited headroom for all of
 these running at once.
+AI roster v2 + self-host stack: master-brief.md §14-16. Planned =/= installed —
+audit NL1 (Phase 0 style) before assuming any service/file/DNS exists.
 
 
 ## CADDY RULES — READ BEFORE ANY CADDY COMMAND
