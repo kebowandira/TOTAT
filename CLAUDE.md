@@ -19,6 +19,9 @@ SSH user: bule
 Caddy: systemd-managed, existing config — SEE CADDY RULES BELOW
 Structure: /opt/totat/
 
+AI roster v2 + self-host stack: master-brief.md §14-16. Planned =/= installed —
+audit NL1 (Phase 0 style) before assuming any service/file/DNS exists.
+
 
 ## CADDY RULES — READ BEFORE ANY CADDY COMMAND
 NL1 already runs a systemd-managed Caddy instance serving other sites.

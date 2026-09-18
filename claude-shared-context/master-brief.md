@@ -1,7 +1,7 @@
 # TOTAT — Master Brief (Full)
 # PT Catat Mapan | Owner: BuLe (one-man-show)
 # Tagline: "Catat usahamu, mapankan hidupmu"
-# Last updated: Sep 2026
+# Last updated: Sep 2026 (AI Roster v2)
 # GDrive: https://drive.google.com/drive/folders/1u5dWXJF6eDGy4rkBU3WrLAbxx7J7UWNI
 # Live context: https://context.totat.my.id/
 
@@ -162,21 +162,106 @@ D-2 re-link screen: trivial (email → Convex user lookup).
 
 ---
 
-## 14. AI ROSTER — SELF-HOST MIGRATION (Keroyokan AI)
+## 14. AI ROSTER v2 — KEROYOKAN (dev tools + self-host + product runtime)
 
-| AI | Role | Scope |
+Status legend:
+  ✅ IN-USE   🧪 PENDING (decision/intake at deploy time)
+  📦 SELF-HOST-PLANNED (NOT on NL1 yet — Phase 0 must confirm before assuming)
+  ⏸ DEFERRED  ❌ DROPPED
+
+### 14.1 Dev & Ops Roster
+
+| AI | Role | Scope | Status | Notes |
+|---|---|---|---|---|
+| Claude chat | Controller / Architect | Architecture decisions, prompts, memory, audit | ✅ Pro $20 | Decisions-only (protects 5h + weekly caps) |
+| Claude Code | Infra & Backend executor | NL1 ops, Supabase migration, CI/CD, Git; gated prompts (GO protocol) | ✅ Pro quota | Bulk work → GLM backend swap |
+| z.ai GLM | Bulk executor + Copy | Claude Code backend swap; onboarding UX, consent copy, CP-T0 kit | 🧪 $6/mo Lite (optional) | Near-Claude coding at ~1/10 price; free tier for copy |
+| Gemini Pro | Schema + Long Context | Convex→Supabase mapping, 1M-context docs, Deep Research | ✅ via XL bundle (free ≤6 mo) | Reassess month 5 → AI Studio free tier |
+| Gemini CLI | Frontend overflow executor | React components, free ~1,000 req/day | 🧪 free | Pairs with Jules |
+| Jules | Frontend async | React components per module via GitHub issues | ✅ free tier | Daily task cap |
+| Abacus ChatLLM | QA + fallback + consolidation | GPT+Claude+Gemini+DeepSeek one dashboard; test-gen; Controller backup | 🧪 $10/mo (optional) | Replaces paid ChatGPT sub |
+| Grok | Research | Marketplace APIs, regulatory, competitive intel | ✅ free | Quotas fluctuate |
+| Hercules | Blueprint factory | Phase 2-3 beta builds, framework validation | ✅ | — |
+| OpenRouter | Gateway/router | One key → DeepSeek/GLM/Qwen/vision chain | 🧪 key ready | Set $5 monthly cap at intake |
+| Hermes Agent | Self-improving ops agent | Telegram ops, browsing, skills/memory, TOTAT conventions | 📦 deploying next | github.com/NousResearch/hermes-agent — see §15 |
+| n8n | Ops automation | Tally triage, digests, backup cron, license checks, alert hub | 📦 planned | Deploys with ai-stack (separate prompt) |
+| SearXNG + Perplexica | Sourced research | Self-hosted Perplexity; Perplexity Pro only if volume demands | 📦 planned | Deploys with ai-stack |
+| Open WebUI | Chat UI | DeepSeek/GLM/local models | 📦 planned | Deploys with ai-stack |
+| Ollama | Local batch only | Embeddings/classification, night jobs | 📦 planned | ≤4B model, manual start, never always-on (8GB) |
+| Letta | — | — | ❌ DROPPED | Retired pre-install; Hermes covers self-improvement |
+| Perplexity Pro | — | — | ⏸ DEFERRED | Perplexica first |
+| Cursor | — | — | ⏸ OPTIONAL | Free alt: Cline/Roo + GLM plan |
+| Paid ChatGPT | — | — | ❌ DROPPED | Replaced by ChatLLM |
+
+Controller: Claude chat. Executor: Claude Code (+GLM swap).
+Limit strategy: decisions-only Claude; heavy output → Gemini/Jules/GLM.
+Budget target: ~$26–36/mo (Pro $20 + ChatLLM $10 + GLM $6 optional + capped APIs).
+
+### 14.2 Product Runtime AI (TOTAT app itself)
+
+Principle: AI = enhancement, NEVER gate. "Free = full function" → core catat
+flow runs without any API call. Offline-first → on-device first (UX rule 5).
+
+| Need | Solution | Mode |
 |---|---|---|
-| Claude chat | Controller / Architect | Architecture decisions, prompts, memory, audit |
-| Claude Code | Infra & Backend | NL1, Supabase migration, API, CI/CD, Git |
-| Gemini Plus | Schema + Long Context | Convex→Supabase mapping, large doc analysis |
-| Jules (Google) | Frontend async | React components per module via GitHub issues |
-| ChatGPT | UI fallback + QA | Components, acceptance test generation |
-| Z.ai | Product spec + Copy | Onboarding UX, consent copy, CP-T0 kit |
-| Grok | Research | Marketplace API docs, regulatory, competitive intel |
-| Hercules | Blueprint factory | Phase 2-3 beta builds, framework validation |
+| P1B Struk OCR (Okt 2026) | tesseract.js + Bahasa traineddata | On-device, offline (primary) |
+| Struk OCR online fallback | Gemini Flash API | Enhancement only, pay-per-use |
+| Future text features | DeepSeek API | Pay-per-use (~$0.28/M in, $0.42/M out); text-only |
+| Vision fallback chain | Gemini Flash → GLM-4.5V → Qwen-VL | Via OpenRouter, hot-swappable |
 
-Controller: Claude chat. Executor: Claude Code.
-Claude Pro limit strategy: Claude chat for decisions only — heavy output to Gemini Plus or Jules.
+## 15. SELF-HOST STACK — NL1 (92.112.126.231, Ubuntu 24.04, 4c/8GB)
+
+⚠️ STATUS Sep 2026: NOTHING DEPLOYED YET. Everything below = planned.
+⚠️ FUTURE AI SESSIONS: "planned" items DO NOT EXIST on NL1 until a Phase 0
+   ground-truth audit confirms them. Never assume files/services/DNS exist.
+
+Deployment method: Claude Code gated prompts — Phase 0 full audit (read-only)
+→ STOP → owner reviews → "GO <n>" per phase. No --dangerously-skip-permissions
+on this box. Provenance rule: owner hints are unverified; Phase 0 is ground truth.
+
+| Service | Purpose | Local port | RAM ceiling | Status |
+|---|---|---|---|---|
+| Hermes Agent | Self-improving ops agent; Telegram gateway (allowlisted); browser tool | 8085 if UI | 1.5G w/ browser, else 1G | 🔜 deploying (prompt v5) |
+| SearXNG | Metasearch backbone | 8081 | 256m | planned |
+| Perplexica | Research UI (DeepSeek brain) | 8082 | 512m | planned |
+| Open WebUI | Chat UI | 8083 | 768m | planned |
+| n8n | Automation + alert hub | 8084 | 512m | planned |
+| Ollama | Night batch only, ≤4B | internal | 3.5g | manual profile only |
+
+Conventions (all self-host services):
+- Dedicated user hermes (no sudo, no docker group); systemd hardened:
+  ProtectSystem=strict, NoNewPrivileges, PrivateTmp, MemoryMax, CPUQuota=150%,
+  Restart=on-failure. Never run agents as root.
+- Secrets: single intake point, 600 perms, never in chat/logs/git; minimal
+  per-service copies only (e.g. hermes.env owned by hermes).
+- Agent memory/skills: /opt/totat/hermes/data — WEEKLY diff review (manual,
+  mandatory month 1; self-edited prompts reviewed before trusted).
+- Messaging: Telegram Bot API ONLY + numeric user-ID allowlist. NO unofficial
+  WhatsApp gateways (ToS ban risk — WA community number never exposed).
+- DNS automation: Cloudflare API token scoped Zone:DNS:Edit totat.my.id ONLY;
+  A records grey-cloud (Caddy TLS); never overwrite/delete existing records;
+  planned helper: /opt/totat/scripts/cf-dns-add.sh.
+- Caddy: one site file per subdomain (LinguaKid pattern), imported by BOTH
+  Caddyfile and Caddyfile.promoted; validate before graceful reload; never restart.
+- Guardrails: zero prod DB credentials to agents; API spend caps (OpenRouter
+  $5/mo key limit; DeepSeek manual top-up); abort gates (disk <10GB, RAM >6GB).
+- Updates: image pulls auto w/ health-gate + rollback; AGENT self-update stays
+  manual monthly (release notes first).
+
+DNS:
+- agent.totat.my.id → 92.112.126.231 (created during Hermes deploy, grey cloud)
+- context.totat.my.id → NOT created; context server = separate future task
+
+## 16. AI DECISION LOG (why — so future sessions don't re-litigate)
+- One self-improving agent only (Hermes) — Letta dropped pre-install.
+- Telegram over WhatsApp for machines: unofficial WA gateways risk banning the
+  community number; official WA Cloud API = separate decision, dedicated number.
+- Free model tiers (OpenRouter ~20 req/min) are dev-tier, not ops-tier — agent
+  brain = paid cheap route (DeepSeek/GLM), free as fallback only.
+- Vision must exist in roster from day 1 (P1B Struk Okt 2026): on-device
+  tesseract.js primary + Gemini Flash fallback.
+- All-in-one consumer platforms (Krater/Poe/Monica) not adopted: no API/white-
+  label value; OpenRouter + targeted subs cover the need at lower cost.
 
 ---
 
