@@ -8,6 +8,12 @@
 TOTAT (Toko Catat) | PT Catat Mapan | Owner: BuLe
 
 
+## Current Execution Status — Read First
+https://raw.githubusercontent.com/kebowandira/TOTAT/main/PROJECT_STATUS.md
+
+Use `PROJECT_STATUS.md` for the current phase, verified state, blockers, open decisions, and next actions. Treat superseded deployment files as history only.
+
+
 ## Full Context
 https://context.totat.my.id/master-brief.md
 https://context.totat.my.id/schema.sql

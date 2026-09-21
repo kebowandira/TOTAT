@@ -8,6 +8,12 @@ TOTAT (Toko Catat) — Free POS PWA for Indonesian warung owners
 Company: PT Catat Mapan | Owner: BuLe (one-man-show)
 
 
+## Current Execution Status — Read First
+Raw: https://raw.githubusercontent.com/kebowandira/TOTAT/main/PROJECT_STATUS.md
+
+This file is the canonical current phase, blocker, decision, and next-action record. If an older document conflicts with it, stop and follow the precedence rules in `PROJECT_STATUS.md`.
+
+
 ## Full Context
 Fetch before any task:
 https://context.totat.my.id/master-brief.md

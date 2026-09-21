@@ -4,6 +4,7 @@
 # Last updated: Sep 2026 (AI Roster v2)
 # GDrive: https://drive.google.com/drive/folders/1u5dWXJF6eDGy4rkBU3WrLAbxx7J7UWNI
 # Live context: https://context.totat.my.id/
+# Current execution status (read first): https://raw.githubusercontent.com/kebowandira/TOTAT/main/PROJECT_STATUS.md
 
 
 ## 1. IDENTITAS PRODUK

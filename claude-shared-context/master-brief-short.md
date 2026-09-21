@@ -1,6 +1,7 @@
 ﻿# TOTAT — Master Brief (Short)
 > Paste ini di awal setiap AI session. Cukup 1 halaman.
 > Full context: https://context.totat.my.id/master-brief.md
+> Current status (read first): https://raw.githubusercontent.com/kebowandira/TOTAT/main/PROJECT_STATUS.md
 
 
 ---
