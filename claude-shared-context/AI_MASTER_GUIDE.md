@@ -21,6 +21,7 @@
 ```
 1. GitHub (primary)
    https://github.com/kebowandira/TOTAT
+   └── PROJECT_STATUS.md                         ← read first: current phase, blockers, decisions
    └── claude-shared-context/master-brief.md    ← full context
    └── claude-shared-context/schema.sql         ← DB schema
    └── claude-shared-context/conventions.md     ← code rules
@@ -44,6 +45,9 @@
 
 ### Raw GitHub URLs (use these in AI prompts)
 ```
+Project status (read first):
+https://raw.githubusercontent.com/kebowandira/TOTAT/main/PROJECT_STATUS.md
+
 Master brief (full):
 https://raw.githubusercontent.com/kebowandira/TOTAT/main/claude-shared-context/master-brief.md
 
