@@ -1,6 +1,6 @@
 # Infrastructure Summary — for handoff to other Claude sessions
 
-**Last updated:** 2026-09-23 (evening — cloud session reverted to local, see "Cloud session attempt" section)
+**Last updated:** 2026-09-23 (evening — key rotation done, see "Cloud handoff key rotation" section)
 **Purpose:** Point any new Claude Code session at this file so it has working knowledge of existing servers before planning new work (e.g., where to deploy a new app) — avoids the exact mistake of a context-free session suggesting `ssh root@...` against a hardened box.
 
 ## Location — this file lives in two places, on purpose
@@ -152,6 +152,12 @@ The migration work was handed to a cloud-hosted Claude Code session (claude.ai/c
 - **Action still owed — treat `cloud_handoff_ed25519` as exposed/burned.** Its private key was pasted directly into the cloud session's chat transcript (not just handed over out-of-band as the original handoff intended) — same class of incident as the MAIL1 key exposure via `VPS.xlsx` conversion. Generate a fresh keypair, append its public half to `authorized_keys` on all 6 servers (Dasabo, NL1, MAIL1, OrangeVPS, RackNerd, GreenCloud), then **remove** `cloud_handoff_ed25519`'s public key from all 6 `authorized_keys` files. Not yet done.
 - Next session (local, on the Windows machine) should resume exactly from the "Migration progress as of the local→cloud handoff" block above: Step 0's two remaining DKIM `dig` checks (`budilelono.web.id`, `globalenglish-academy.com`), then GreenCloud hardening, then Steps 3/4/5. No facts in that block changed tonight.
 
+## Cloud handoff key rotation (2026-09-23, later that evening) — done
+
+`cloud_handoff_ed25519` (exposed via chat transcript paste, see section above) has been fully revoked: its public key line was removed from `~/.ssh/authorized_keys` on all 6 servers (Dasabo, NL1, MAIL1, OrangeVPS, RackNerd, GreenCloud), verified with a post-removal `grep -c` returning 0 on each, and the private/public key files were deleted from the local machine. Confirmed via direct SSH using each server's own existing dedicated key (`id1_v3`, `nl1_new`, `mail1_ed25519`, `orangevps_ed25519`, `racknerd_ed25519`, `greencloud_ed25519`) — no other authorized_keys entries were touched.
+
+A replacement keypair (`~/.ssh/handoff2_ed25519`, comment `bule-handoff-2026-09-23-v2`) was generated but **deliberately not deployed to any server yet** — there's no current cloud session needing SSH access, and per the "Cloud session attempt" section above, handing raw SSH work to an `anthropic_cloud`-kind session doesn't work anyway (80/443-only outbound limit) until a bastion (sslh) or self-hosted runner is set up. Deploy `handoff2_ed25519`'s public half only when that fix exists and a real handoff is happening — and paste private keys out-of-band, never into a chat transcript, to avoid repeating this exposure.
+
 ## Known open items (as of this writing)
 
 - NL1 and MassiveGrid SSH access hasn't been re-verified since a scratchpad clear cost Dasabo's keys (recovered 2026-09-14). Worth a quick check before relying on them.
@@ -159,6 +165,6 @@ The migration work was handed to a cloud-hosted Claude Code session (claude.ai/c
 - Root cause of the 2026-09-16→18 rclone/crontab disappearance on both boxes was never identified — worth keeping an eye out in case it recurs.
 - Whether to rotate the MySQL root password that was found hardcoded in `restore-wp.sh` (see Backup system section above) — not yet decided as of 2026-09-18.
 - MAIL1's SSH key needs rotation (see SSH access section above) — plaintext key exposure via `VPS.xlsx` conversion, 2026-09-18.
-- `cloud_handoff_ed25519` needs rotation — exposed in a cloud session's chat transcript, 2026-09-23 evening (see "Cloud session attempt" section above). Remove its public key from all 6 servers' `authorized_keys` once a replacement is deployed.
+- ~~`cloud_handoff_ed25519` needs rotation~~ — **done 2026-09-23 evening**, see "Cloud handoff key rotation" section above. Replacement (`handoff2_ed25519`) generated but intentionally not yet deployed to any server.
 - Do not hand this project's SSH-driven work to another `anthropic_cloud`-kind Claude Code session without first setting up a real fix (self-hosted runner, or a deliberately-approved bastion) — confirmed 2026-09-23 that this environment kind cannot make outbound TCP connections on any port other than 80/443, regardless of its Network Access setting.
 - Two servers mentioned by the user on 2026-09-18 are still **not documented anywhere on disk**: a MassiveGrid box described as "New York, 1 core/1GB/32GB Ubuntu 24.04, idle, test/spare" (possibly the same MassiveGrid as above with a different IP than recorded, or a second MassiveGrid instance — unconfirmed), and **bulefx1** (DigitalKu/Hetzner Germany, 144.76.96.58, Windows RDP, FORGE/MT5 candidate, "Active"). Neither appears in `VPS.xlsx` or any `.md` file. Needs the user to clarify/provide access details before either can be added here.
