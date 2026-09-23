@@ -1,6 +1,6 @@
 # Infrastructure Summary — for handoff to other Claude sessions
 
-**Last updated:** 2026-09-18
+**Last updated:** 2026-09-23 (evening — cloud session reverted to local, see "Cloud session attempt" section)
 **Purpose:** Point any new Claude Code session at this file so it has working knowledge of existing servers before planning new work (e.g., where to deploy a new app) — avoids the exact mistake of a context-free session suggesting `ssh root@...` against a hardened box.
 
 ## Location — this file lives in two places, on purpose
@@ -143,6 +143,15 @@ Owner asked to be able to manage all VPS from one place (NL1) without concentrat
 - ⏳ **Not yet done, still owed:** IO speed benchmarking on all 3 new boxes (owner wants this before finalizing usage assignment — same idea as the earlier MassiveGrid benchmark); hostname/PTR recommendations for all 3 new boxes (owner asked, not yet answered — reasonable defaults: `mail1.gord.my.id` for OrangeVPS since it's a direct role replacement, something in the existing `euN.bule.my.id` numbering or a clearer `cms1.bule.my.id` for RackNerd, similar for GreenCloud); STEP 3 (deploy Mailu to OrangeVPS) and STEP 4 (deploy CMS to RackNerd) not started; STEP 5 (backup/restic setup + Uptime Kuma) blocked on GreenCloud hardening.
 - **Full six-step migration plan** (with exact commands per step) was pasted by the owner in full — if it's not visible in a future session's context, ask the owner to re-paste it rather than reconstructing from memory (see the TOTAT/Hermes install brief earlier in this project's history for exactly why that matters — a reconstructed-from-memory brief caused real deviations there).
 
+## Cloud session attempt (2026-09-23, evening) — reverted to local
+
+The migration work was handed to a cloud-hosted Claude Code session (claude.ai/code) the same day, per the handoff above. Result: **no migration progress** — the entire session was consumed diagnosing and working around a platform limitation, then handing back to local.
+
+- `cloud_handoff_ed25519`'s structure was validated (`ssh-keygen -y` derives `ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINIMMMq+kzpDS6zPpKYSxu1x8dISdOjLabSLkQznnw0B bule-cloud-handoff-2026`), but **it was never actually used to reach a single server.** Direct testing (raw TCP probes, not just `ssh`) proved that this cloud environment kind (`anthropic_cloud`, confirmed on all 3 environments available to this account) only permits outbound TCP on ports 80/443 — even to unrelated third-party hosts (`smtp.gmail.com:587`, `1.1.1.1:22` were also blocked). This held true with Network Access set to **Full**. **This is a hard platform limit, not a per-session setting** — no environment of this kind can be used for raw-SSH infra work, regardless of the Network Access dropdown chosen.
+- Three fixes were evaluated: (1) an `sslh` HTTPS/SSH multiplexer bastion on NL1's port 443 (rejected for tonight — real risks: brief Caddy outage during setup, silent-breakage risk on the Dasabo-failover box, fail2ban loses real source IPs for traffic arriving via the multiplexed path), (2) revert the SSH-driving work to a local Claude Code session, (3) provision a dedicated self-hosted Claude Code Remote runner (bigger lift, would also fix the original "unattended if the machine sleeps" problem that motivated the local→cloud move — **not done, still on the table** if this comes up again). Owner chose **(2)** for tonight.
+- **Action still owed — treat `cloud_handoff_ed25519` as exposed/burned.** Its private key was pasted directly into the cloud session's chat transcript (not just handed over out-of-band as the original handoff intended) — same class of incident as the MAIL1 key exposure via `VPS.xlsx` conversion. Generate a fresh keypair, append its public half to `authorized_keys` on all 6 servers (Dasabo, NL1, MAIL1, OrangeVPS, RackNerd, GreenCloud), then **remove** `cloud_handoff_ed25519`'s public key from all 6 `authorized_keys` files. Not yet done.
+- Next session (local, on the Windows machine) should resume exactly from the "Migration progress as of the local→cloud handoff" block above: Step 0's two remaining DKIM `dig` checks (`budilelono.web.id`, `globalenglish-academy.com`), then GreenCloud hardening, then Steps 3/4/5. No facts in that block changed tonight.
+
 ## Known open items (as of this writing)
 
 - NL1 and MassiveGrid SSH access hasn't been re-verified since a scratchpad clear cost Dasabo's keys (recovered 2026-09-14). Worth a quick check before relying on them.
@@ -150,4 +159,6 @@ Owner asked to be able to manage all VPS from one place (NL1) without concentrat
 - Root cause of the 2026-09-16→18 rclone/crontab disappearance on both boxes was never identified — worth keeping an eye out in case it recurs.
 - Whether to rotate the MySQL root password that was found hardcoded in `restore-wp.sh` (see Backup system section above) — not yet decided as of 2026-09-18.
 - MAIL1's SSH key needs rotation (see SSH access section above) — plaintext key exposure via `VPS.xlsx` conversion, 2026-09-18.
+- `cloud_handoff_ed25519` needs rotation — exposed in a cloud session's chat transcript, 2026-09-23 evening (see "Cloud session attempt" section above). Remove its public key from all 6 servers' `authorized_keys` once a replacement is deployed.
+- Do not hand this project's SSH-driven work to another `anthropic_cloud`-kind Claude Code session without first setting up a real fix (self-hosted runner, or a deliberately-approved bastion) — confirmed 2026-09-23 that this environment kind cannot make outbound TCP connections on any port other than 80/443, regardless of its Network Access setting.
 - Two servers mentioned by the user on 2026-09-18 are still **not documented anywhere on disk**: a MassiveGrid box described as "New York, 1 core/1GB/32GB Ubuntu 24.04, idle, test/spare" (possibly the same MassiveGrid as above with a different IP than recorded, or a second MassiveGrid instance — unconfirmed), and **bulefx1** (DigitalKu/Hetzner Germany, 144.76.96.58, Windows RDP, FORGE/MT5 candidate, "Active"). Neither appears in `VPS.xlsx` or any `.md` file. Needs the user to clarify/provide access details before either can be added here.
