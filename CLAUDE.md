@@ -20,7 +20,11 @@ https://context.totat.my.id/schema.sql
 
 
 ## Server
-NL1: 92.112.126.231 (DeluxHost, Ubuntu 24.04, 4core/8GB/80GB)
+NL1: 62.105.222.90 (DeluxHost, Ubuntu 24.04, 4core/8GB/80GB) — **IP changed 2026-09-20/21**
+(was 92.112.126.231; DeluxHost routing incident led to a permanent IP reassignment on the
+same physical box, confirmed via SSH host-key match — see GDrive `INFRASTRUCTURE_SUMMARY.md`
+for detail). Other docs in this repo (`master-brief.md`, `master-brief-short.md`,
+`AI_MASTER_GUIDE.md`) still reference the old IP and have not yet been reconciled.
 SSH user: bule
 Caddy: systemd-managed, existing config — SEE CADDY RULES BELOW
 Structure: /opt/totat/

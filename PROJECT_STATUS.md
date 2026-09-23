@@ -251,4 +251,13 @@ Each update must include the date, evidence or link, and status label. Never add
 
 ## Change log
 
+- **2026-09-23 — VERIFIED:** cross-checked GitHub infrastructure references against GDrive
+  `claude-shared-context/INFRASTRUCTURE_SUMMARY.md` (modified 2026-09-23, more current than any
+  repo copy). NL1's public IP changed `92.112.126.231` → `62.105.222.90` (DeluxHost routing
+  incident, 2026-09-20/21; same physical server, confirmed via SSH host-key match). Corrected in
+  root `CLAUDE.md`. **Not yet corrected:** `claude-shared-context/master-brief.md`,
+  `master-brief-short.md`, and `AI_MASTER_GUIDE.md` still show the old IP — needs a follow-up
+  pass. `DEPLOY_STEPS.md` and `CLAUDE_CODE_TASK.md` left untouched as already-superseded
+  history. This also reconfirms risk #1 below (public repo carries live infra addresses) is
+  still open and unresolved.
 - **2026-09-21 — VERIFIED/DECIDED:** full GitHub repository audit; Hercules source and Convex export recognized as the unfinished application baseline; cloud-beta-to-self-hosted-live direction recorded; phase and handoff tracker created.
