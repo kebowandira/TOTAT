@@ -20,7 +20,8 @@ https://context.totat.my.id/schema.sql
 
 
 ## Server
-NL1: 92.112.126.231 (DeluxHost, Ubuntu 24.04, 4core/8GB/80GB)
+NL1: 62.105.222.90 (DeluxHost, Ubuntu 24.04, 4core/8GB/80GB) — IP changed
+2026-09-20/21, see correction below
 SSH user: bule
 Caddy: systemd-managed, existing config — SEE CADDY RULES BELOW
 Structure: /opt/totat/
@@ -50,12 +51,33 @@ headroom for all of these running at once.
 AI roster v2 + self-host stack: master-brief.md §14-16. Planned =/= installed —
 audit NL1 (Phase 0 style) before assuming any service/file/DNS exists.
 
+**IP change (2026-09-20/21, confirmed live 2026-09-23):** NL1's public IP
+changed from 92.112.126.231 to 62.105.222.90 after a DeluxHost provider-side
+routing incident on that IP's subnet (not specific to this server — same
+box confirmed via SSH host-key match, no reboot, no data loss). DNS records
+(agent.totat.my.id, linguakid.bule.my.id) were already updated to the new
+IP. Any older doc, script, or `.ovpn` client profile still referencing the
+old IP is stale.
+
+**Dasabo + MAIL1 decommission (owner decision, 2026-09-2x):** the "Dasabo
+warm-standby mirror" referenced above, and the separate MAIL1 mail server,
+are both being let lapse (renewal cost increase, owner declined to renew)
+with a restore/recreate planned for early 2027 — see
+`claude-shared-context/INFRASTRUCTURE_SUMMARY.md` for details. Both also had
+their IPs changed before the planned lapse (Dasabo: 43.240.149.38, was
+102.215.228.85; MAIL1: 43.240.149.83, was 45.146.202.198). Treat both as
+temporary infrastructure from here on, not durable references — a "2027
+restore" task should start from the Google Drive backups, not assume either
+original server is still reachable.
+
 
 ## GDrive Sync — SEPARATE server, NOT NL1
 Per BuLe (reported from a different session on a different box — this
 session has no access to it, treat as unverified until confirmed
-live): a second server at 102.215.228.85 (SSH user bule, port 2298,
-key ~/.ssh/id1_v3) runs an `rclone` remote named `gdrive`. This is the
+live): a second server at 43.240.149.38 (Dasabo, SSH user bule, port 2298,
+key ~/.ssh/id1_v3) — **note: this is Dasabo, one of the two boxes flagged
+for decommission above; this rclone workaround's home is on a timer** —
+runs an `rclone` remote named `gdrive`. This is the
 practical workaround for the long-standing "GDrive foundation folder is
 behind GitHub" gap — the Google Drive tools available to Claude
 sessions can rename/move files but cannot write file *content*, so
