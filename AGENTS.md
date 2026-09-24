@@ -18,6 +18,13 @@ This file is the canonical current phase, blocker, decision, and next-action rec
 Fetch before any task:
 https://context.totat.my.id/master-brief.md
 
+**Caveat as of 2026-09-24:** the full `master-brief.md` now lives in the
+private `kebowandira/totat-internal` repo (see `CLAUDE.md`'s "Repository
+split" section) and must not be synced to this public endpoint as-is — it
+contains server addresses and infra detail. If this URL doesn't resolve, or
+returns something other than a sanitized (schema/conventions-only) summary,
+treat it as not yet set up rather than assuming it's current.
+
 
 ## Tech Stack
 React 19 + Vite + TypeScript + Tailwind v4 + shadcn/ui
