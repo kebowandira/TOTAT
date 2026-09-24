@@ -119,13 +119,15 @@ app.totat.my.id/karir          → PWA Karir
 │   ├── warung/                ← app.totat.my.id/warung (future self-host)
 │   ├── saji/                  ← app.totat.my.id/saji
 │   └── [modul]/               ← app.totat.my.id/[modul]
-├── context/                   ← context.totat.my.id
-│   ├── master-brief.md
-│   ├── master-brief-short.md
+├── context/                   ← context.totat.my.id (PUBLIC, no auth —
+│                                  schema + conventions ONLY, per the
+│                                  2026-09-24 repo split; do not sync
+│                                  master-brief.md, AI_MASTER_GUIDE.md, or
+│                                  anything from the private totat-internal
+│                                  repo into this directory)
 │   ├── schema.sql
 │   ├── conventions.md
 │   ├── per-ai-setup.md
-│   ├── AI_MASTER_GUIDE.md
 │   ├── AI_ROLES.md
 │   └── domain-structure.md    ← THIS FILE
 └── scripts/

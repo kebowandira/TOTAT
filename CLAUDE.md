@@ -1,177 +1,67 @@
-# TOTAT — CLAUDE.md
-# Place at: /opt/totat/CLAUDE.md on NL1
+# TOTAT — CLAUDE.md (public repo entrypoint)
 # Claude Code reads this automatically in every session in this directory
-# GDrive: https://drive.google.com/drive/folders/1u5dWXJF6eDGy4rkBU3WrLAbxx7J7UWNI
-
 
 ## Project
 TOTAT (Toko Catat) | PT Catat Mapan | Owner: BuLe
 
+## This repository's scope
 
-## Current Execution Status — Read First
-https://raw.githubusercontent.com/kebowandira/TOTAT/main/PROJECT_STATUS.md
+`kebowandira/TOTAT` (public) holds only the 13 Cloudflare Pages landing-page
+sources under `sites/`, plus general contributor docs (`AGENTS.md`,
+`claude-shared-context/conventions.md`, `claude-shared-context/schema.sql`,
+`claude-shared-context/domain-structure.md`, `claude-shared-context/AI_ROLES.md`).
+Nothing here should ever include server addresses, SSH details, credentials,
+or internal phase/decision tracking — see "Repository split" below.
 
-Use `PROJECT_STATUS.md` for the current phase, verified state, blockers, open decisions, and next actions. Treat superseded deployment files as history only.
+## Current status
 
+See `PROJECT_STATUS.md` in this repo for the public-safe summary. Full
+phase/decision detail, server infrastructure, and AI-ops context live in the
+private `kebowandira/totat-internal` repository — request access from BuLe if
+your session needs it. Do not guess at infrastructure detail (server
+addresses, SSH ports, deployment paths) from memory or from an old commit in
+this repo's history; ask for `totat-internal` access instead.
 
-## Full Context
-https://context.totat.my.id/master-brief.md
-https://context.totat.my.id/schema.sql
+## Repository split (2026-09-24)
 
-
-## Server
-NL1: 92.112.126.231 (DeluxHost, Ubuntu 24.04, 4core/8GB/80GB)
-SSH user: bule
-Caddy: systemd-managed, existing config — SEE CADDY RULES BELOW
-Structure: /opt/totat/
-
-**Correction (2026-09-18, verified from a session with real NL1 SSH access):**
-There is no Docker Compose "ai-stack" and no `search.`/`ai.` Caddy block on
-NL1 — that earlier claim in this file was BuLe-reported and unconfirmed, and
-has now been checked directly and found false (`/opt/` is empty, no `docker`
-binary installed, no such Caddy site files exist).
-
-What NL1 actually runs instead: **Nous Research's Hermes Agent**, installed
-and live as of 2026-09-18 as a dedicated ops agent — user `hermes` (no sudo,
-no docker group), installed at `/home/hermes/.hermes/` (not `/opt/totat/`),
-OpenRouter as the model provider, messaging via Telegram (allowlisted) and
-WhatsApp (paired), email via `info@totat.my.id`. Its own web dashboard is
-reverse-proxied at `https://agent.totat.my.id` (basic-auth protected) via a
-Caddy site file that mirrors the existing "linguakid.caddy" convention. Full
-build history, every deviation from the original install brief, and current
-status live in `claude-shared-context/` on the same Google Drive folder this
-file points to (`TOTAT_HERMES_BUILD.md`).
-
-Capacity-planning note still holds regardless of the above: NL1 is only 8GB
-RAM total, already shared with Caddy, the Dasabo warm-standby mirror, and
-(eventually, ~Sep 2027) a possible TOTAT self-host — don't assume unlimited
-headroom for all of these running at once.
-
-AI roster v2 + self-host stack: master-brief.md §14-16. Planned =/= installed —
-audit NL1 (Phase 0 style) before assuming any service/file/DNS exists.
-
-
-## GDrive Sync — SEPARATE server, NOT NL1
-Per BuLe (reported from a different session on a different box — this
-session has no access to it, treat as unverified until confirmed
-live): a second server at 102.215.228.85 (SSH user bule, port 2298,
-key ~/.ssh/id1_v3) runs an `rclone` remote named `gdrive`. This is the
-practical workaround for the long-standing "GDrive foundation folder is
-behind GitHub" gap — the Google Drive tools available to Claude
-sessions can rename/move files but cannot write file *content*, so
-this rclone setup is the actual sync mechanism.
-
-Status as of this note:
-- rclone `gdrive` remote configured; a sync command was dry-run tested
-  clean, but NOT yet run for real.
-- Source dir `/home/bule/shared-context/` exists on that server but is
-  currently EMPTY — what content actually goes there is still
-  undecided (open next step, not this repo's decision to make alone).
-- KNOWN GOTCHA: on that box, `rclone`/`scp` commands get auto-denied by
-  the permission system as looking like data exfiltration, and a
-  session can't self-edit its own `settings.local.json` to allow-list
-  them either. Future sessions there should hand BuLe the exact command
-  to run themselves rather than retry it. A suggested allow-rule JSON
-  snippet exists (from that session) but hasn't been added yet.
-
-
-## CADDY RULES — READ BEFORE ANY CADDY COMMAND
-NL1 already runs a systemd-managed Caddy instance serving other sites.
-NEVER run: caddy start (would conflict with existing instance)
-NEVER run: caddy stop (would kill existing sites)
-
-
-SAFE commands only:
-  systemctl reload caddy        ← reload existing systemd Caddy
-  systemctl status caddy        ← check status
-  caddy validate --config /etc/caddy/Caddyfile  ← validate before changes
-
-
-To add TOTAT to existing Caddy:
-  Check existing config: cat /etc/caddy/Caddyfile (or wherever it is)
-  ADD totat blocks to existing config — do not create separate instance
-  Then: systemctl reload caddy
-
-
-## Structure
-/opt/totat/
-├── caddy/Caddyfile     ← TOTAT Caddy blocks (merge into existing, do not run separately)
-├── sites/[modul]/      ← landing pages (static HTML)
-├── apps/[modul]/       ← PWA builds
-├── context/            ← AI context files → context.totat.my.id
-└── scripts/            ← helper scripts
-
-
-## Quick Commands
-bash /opt/totat/scripts/add-subdomain.sh [modul]
-bash /opt/totat/scripts/deploy.sh [modul] ./dist
-bash /opt/totat/scripts/backup.sh
-
-
-## NEVER TOUCH
-/opt/totat/apps/warung/ ← live production (on Hercules, not here yet)
-Existing Caddy systemd config ← check before any Caddy changes
-
-
-## Current Status
-- TOTAT app: LIVE at warungbeta.totat.my.id via Hercules (NOT on NL1 yet)
-- Landing pages (totat.my.id + all [modul].totat.my.id): LIVE on 13
-  separate Cloudflare Pages Classic projects (one per subdomain, each
-  with `Root directory` set to its own `sites/[modul]` folder, no
-  Functions/Workers logic) — migration completed 2026-09-17, confirmed
-  live by BuLe via Tor Browser (cache/CDN-proof check) on every
-  subdomain. The old single-Worker host-routing setup
-  (wrangler.jsonc/worker.js) is retired — see `wrangler.jsonc.bak` /
-  `worker.js.bak` if a future dynamic API Worker is ever built.
-- KNOWN GOTCHA: the Cloudflare dashboard's own "Deployments" build status
-  can show a stale "Latest build failed" long after a fix has shipped and
-  is live. Don't trust that tab at face value — check the live site
-  (clear cache first) or the Git-integration deploy result before
-  concluding something is actually broken.
-- NL1 role: context server (context.totat.my.id) + future self-host (Sep
-  2027) — NL1 does NOT serve totat.my.id landing pages (decommissioned,
-  see PR #4)
-- /opt/totat/ may not exist yet — check before assuming
-
+This public repo previously carried internal operational docs (`CLAUDE.md`'s
+full version, `PROJECT_STATUS.md`'s full version, `master-brief*.md`,
+`AI_MASTER_GUIDE.md`, and two historical deployment guides). Those moved to
+`kebowandira/totat-internal` (private) after a repository security review
+found they exposed server topology and SSH access patterns publicly with no
+product reason to. This repo's git **history** still contains the pre-split
+versions of those files — that is a separate, not-yet-decided cleanup.
 
 ## Landing page architecture: 13 Cloudflare Pages Classic projects
-COMPLETE as of 2026-09-17. Each subdomain is its own independent Pages
-project connected to this repo (`kebowandira/TOTAT`, branch `main`),
-Root directory pointed at its own `sites/[modul]` folder, no build
-command, no Functions — zero request-time logic, genuinely unlimited
-free static requests (verified against Cloudflare's pricing docs: this
-only holds when a project has no Functions/Workers invoked per request).
 
-| Domain | Root directory | Status |
-|---|---|---|
-| totat.my.id (+www) | `sites/main` | live |
-| warung.totat.my.id | `sites/warung` | live |
-| cafe.totat.my.id | `sites/cafe` | live |
-| sewa.totat.my.id | `sites/sewa` | live |
-| tamu.totat.my.id | `sites/tamu` | live |
-| jasa.totat.my.id | `sites/jasa` | live |
-| talent.totat.my.id | `sites/talent` | live |
-| kanal.totat.my.id | `sites/kanal` | live |
-| kirim.totat.my.id | `sites/kirim` | live |
-| jaringan.totat.my.id | `sites/jaringan` | live |
-| investor.totat.my.id | `sites/investor` | live |
-| distribusi.totat.my.id | `sites/distribusi` | live |
-| karir.totat.my.id | `sites/karir` | live |
+Each subdomain is its own independent Cloudflare Pages project connected to
+this repo (`kebowandira/TOTAT`, branch `main`), Root directory pointed at its
+own `sites/[modul]` folder, no build command, no Functions.
 
-(Exact Cloudflare project names vary slightly from `sites/` folder names
-— e.g. `totatcafe`, `totatwarung` — check the Cloudflare dashboard for
-the authoritative project list; the Root directory → domain mapping
-above is what matters for the repo.)
+| Domain | Root directory |
+|---|---|
+| totat.my.id (+www) | `sites/main` |
+| warung.totat.my.id | `sites/warung` |
+| cafe.totat.my.id | `sites/cafe` |
+| sewa.totat.my.id | `sites/sewa` |
+| tamu.totat.my.id | `sites/tamu` |
+| jasa.totat.my.id | `sites/jasa` |
+| talent.totat.my.id | `sites/talent` |
+| kanal.totat.my.id | `sites/kanal` |
+| kirim.totat.my.id | `sites/kirim` |
+| jaringan.totat.my.id | `sites/jaringan` |
+| investor.totat.my.id | `sites/investor` |
+| distribusi.totat.my.id | `sites/distribusi` |
+| karir.totat.my.id | `sites/karir` |
 
-**NEVER attach `warungbeta.totat.my.id` to any of these Pages projects**
-— it's served by Hercules, not this repo.
+(Exact Cloudflare project names vary slightly from `sites/` folder names —
+check the Cloudflare dashboard for the authoritative project list.)
 
-**Adding a new module in future:** create one more Pages project the
-same way (Import Git repo → Root directory `sites/[modul]` → attach
-`[modul].totat.my.id`). There is no shared routing file to edit anymore
-— each subdomain is fully independent.
-
+**Adding a new module:** create one more Pages project the same way (Import
+Git repo → Root directory `sites/[modul]` → attach `[modul].totat.my.id`).
+There is no shared routing file — each subdomain is fully independent.
 
 ## context.totat.my.id — Auth
-DECIDED: PUBLIC — no auth required (Sep 2026). Schema + conventions only, no user data.
-DO NOT expose sensitive financial/user data in context files.
+
+DECIDED: PUBLIC — no auth required. Schema + conventions only, no user data,
+no infrastructure detail.
