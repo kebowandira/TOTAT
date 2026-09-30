@@ -380,6 +380,23 @@ Owner deprioritized the daily-loss-limit circuit breaker to the production phase
 
 Pushed to `kebowandira/APEX-Winning-Strategies-System` (commits `3bbb51b` through `afcd5f0`), deployed and verified live on both GreenCloud and the Windows wrapper.
 
+## SBO_OTE ported, K50-SMT and TRL_AS investigated and deliberately skipped (2026-09-30)
+
+Continued porting the remaining engines. Checked K50-SMT and TRL_AS first since they were next in line, found both had a real architectural blocker rather than just "more adaptation work":
+
+- **K50-SMT PO3**: every one of its 12 variants requires SMT (gold-vs-silver) divergence as either a hard requirement or the primary confluence factor - meaning a second symbol's price feed (XAGUSD) that this wrapper has never fetched. Not a simplification like RAMA's M15-for-M5 substitution - genuinely missing data. Skipped, documented.
+- **TRL_AS**: cleanest source code in the whole pool, but its canonical design has **TP_MODE=NONE** - it doesn't emit a target at all, only a structural trailing-stop exit plan (`EXIT_MANAGER` role is mandatory per its own Sentinel contract). This pipeline's execution model is fixed SL/TP orders; adapting TRL properly means building real trailing-stop position management first (extending the existing `position_watches`/profit-target-close pattern to trail a moving structural line), which is bigger than a single engine port. Skipped, documented.
+
+**SBO_OTE ported instead** (6th real-detection engine) - H4 market-structure-break → order-block POI → M15 sweep+reclaim, two-timeframe (H4+M15), no cross-symbol requirement, fixed structural SL/TP with the source's own RR≥2.0 minimum enforced. `detect_sbo()` in `strategy/filters.py`: finds the freshest H4 MSB (close breaks a rolling N-bar swing high/low) within the last 8 H4 bars, caches the opposite-color H4 candle immediately before it as the Order-Block POI (body mode, matching source variant B1 exactly), requires price in the discount/premium half of the broken dealing range, then looks for an M15 sweep+reclaim of the POI's edge. The source's actual 2-step process (sweep a swing low *inside* the POI, then close above a *later separate* swing high) was collapsed into one sweep+reclaim bar - the same simplification already used for HABE's failed-breakout pattern. `wrapper_api.py` now also fetches H4 bars (260, same as H1/D1) alongside M15/H1/D1.
+
+**Verified**: synthetic data (fires correctly on a hand-built MSB→POI→sweep→reclaim sequence, with the RR≥2.0 gate correctly blocking a version of the same setup with too-wide a stop), a 300-seed random-noise stress test (2 fires, 0 crashes - appropriately rare given the stacked conditions), and live via `/candidate_setups` (200 OK, `used_real_pattern_detection: true`, correctly quiet since no real setup was present at test time).
+
+**Honest caveat**: unlike RAMA, there's no old-dataset row to even flag as a comparison point - `APEX_Strategy_Summary.csv` has no `SBO B1-...` entry at all, only B2-OBfull (+0.714, n=7) and B3-FVGpoi (+0.2, n=5), neither of which is the variant that got ported. No backtest exists for the real detection logic yet either way.
+
+**Engine count is now 6**: SBB, HABE, MUSIC, AGMF, RAMA, SBO - 9 variants total, all real detection. ECO3, FAMT, LKZ remain unexplored; K50-SMT and TRL_AS are explored and explicitly deferred pending, respectively, a second-symbol data feed and trailing-stop position management.
+
+Pushed to `kebowandira/APEX-Winning-Strategies-System` (commit `3684cef`), deployed and verified live on both GreenCloud and the Windows wrapper.
+
 ## Known open items (as of this writing)
 
 - NL1 and MassiveGrid SSH access hasn't been re-verified since a scratchpad clear cost Dasabo's keys (recovered 2026-09-14). Worth a quick check before relying on them.
