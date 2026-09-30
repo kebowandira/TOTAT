@@ -243,6 +243,8 @@ Owner pointed to a second, far more rigorous repo: `kebowandira/APEX` (private, 
 
 **Practical upshot for the owner:** the pipeline (dashboard, approval flow, execution plumbing, position management, notifications) is now more correct than before and worth continuing to use *as infrastructure*. The strategies it's currently wired to are not validated and per this audit have no demonstrated edge — keep treating every approval as a pipeline test, not a trading decision, until this changes.
 
+**GDrive sync mechanism (new standing instruction, 2026-09-30):** the Drive tools available to this session can **create** files and **trash** them, but cannot update a file's content in place (confirmed by testing — matches the earlier-documented limitation for the TOTAT doc's Drive copy). So "sync to Drive" means: trash the previous status file, create a fresh one. Status doc lives in the `APEX_v4_Trade_Log` folder (`1vStgn5lSC_s5sf8smJli5JplXNJ57puw`) as **`APEX_Winning_Strategies_STATUS.md`** — current file id `1ZM_wID4CR84fmNM7NdY9-hxMbnG0erVl` as of this writing (**this id changes every sync, check by filename not id**). Keep it a concise summary (mirrors this doc's trading-pipeline sections, not a full copy) since it has to be fully rewritten each time rather than diffed.
+
 ## Windows VPS: MT5 wrapper deployment (2026-09-29)
 
 New Windows Server 2019 VPS purchased (`46.34.3.167`, Administrator/RDP access given, 2 vCPU, 8GB RAM — matches the earlier buying guidance: explicit MT5 support, 4GB+ RAM, avoided a $3.25/mo MT4-only 768MB plan the owner was initially looking at). Fully deployed and verified end-to-end same day.
