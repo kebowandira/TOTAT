@@ -1,6 +1,6 @@
 # Infrastructure Summary — for handoff to other Claude sessions
 
-**Last updated:** 2026-09-30 — auto-test mode live (setups execute without manual approval, for demo-account forward-testing), plus a critical executor regression found and fixed the same session it was introduced. See "Auto-test mode + critical executor regression" at the end of this file.
+**Last updated:** 2026-09-30 — new Strategy Reference dashboard page (all 26 backtested engines, not just our 4) and mobile-responsive UI. See "Strategy Reference page + mobile responsiveness" at the end of this file.
 **Purpose:** Point any new Claude Code session at this file so it has working knowledge of existing servers before planning new work (e.g., where to deploy a new app) — avoids the exact mistake of a context-free session suggesting `ssh root@...` against a hardened box.
 
 ## Location — this file lives in two places, on purpose
@@ -315,6 +315,18 @@ Owner confirmed the manual approve/reject flow works end-to-end and asked to tur
 **Auto-refresh added** (owner also asked: "log history need auto refresh, only 3 shown"): investigated first — `trade_history` genuinely only had 3 rows at the time (real data, not a display bug; only 3 test positions had actually closed). Added auto-refresh anyway since it's the right fix for the underlying need — dashboard pages now reload every 15s via a small JS `setInterval`, paused while a form field is focused (so it doesn't interrupt filling in a profit-target or similar), disabled specifically on the Upload page (file-picker interaction shouldn't be interrupted by a reload).
 
 All of the above pushed to `kebowandira/APEX-Winning-Strategies-System` (commit `4cb2618`) and live on both GreenCloud and the Windows wrapper.
+
+## Strategy Reference page + mobile responsiveness (2026-09-30)
+
+Owner confirmed the dashboard's working and asked three things: (1) surface the engine analysis data on the dashboard, (2) enrichment ideas for the EA/dashboard, (3) fix mobile readability.
+
+**New `/strategies` page**: turns out we have real backtest data for **26 engine/variant combinations**, not just our 4 — `APEX_Strategy_Summary.csv` (unconditioned) and `APEX_Conditioned_Edges.csv` (specific session+regime combos, e.g. "HABE B3-noReac under TRANSITION | NEW YORK: 9 trades, 66.7% win rate, +0.667R") were sitting in the repo's `strategy/` folder the whole time, just never surfaced anywhere visible. Copied both CSVs to GreenCloud (`/opt/trading-pipeline/app/data/`), added a route that reads them with `csv.DictReader` and renders sorted-by-expectancy tables. The 4 engines actually wired into `strategy/filters.py` are highlighted with a `real`/`placeholder` badge (matching their actual current detection status), and the external audit's caveat (label-dependence problem, unverified provenance) is shown prominently on the page itself, not just buried in docs.
+
+**Mobile responsiveness**: nav collapses to a hamburger toggle below 720px width (pure CSS/vanilla-JS, no framework), every table wrapped in a horizontally-scrolling container instead of squishing illegibly, tighter font/padding on small screens, and Approve/Reject buttons go full-width and stack instead of sitting side-by-side. **Real bug hit while building the new page**: `csv.DictReader` returns every value as a string, and Jinja's `round` filter doesn't accept strings — `{{ r['n']|round|int }}` crashed with `TypeError: type str doesn't define __round__ method` until changed to `{{ r['n']|float|round|int }}`. Worth remembering for any future CSV-driven template.
+
+**Enrichment ideas given to the owner** (not yet implemented, owner to prioritize): backtest the new real SBB/HABE detection (no win-rate figures exist for it yet — the biggest honesty gap right now); a daily-loss-limit/max-concurrent-positions circuit breaker now that auto-test mode fires unattended; one more targeted look at `kebowandira/APEX`'s `research/2026-09/sources/` for MUSIC/AGMF's original logic before giving up on those two; an equity curve chart on the Overview page (we've been collecting `account_snapshots` every 15 minutes since day one and never visualized it); surfacing `analysis.py`'s existing win-rate/expectancy-by-strategy computation (already runs every 30 minutes into `audit_log`, just never shown); a live market-context widget (current price/session/regime always visible, not just when a setup fires).
+
+Pushed to `kebowandira/APEX-Winning-Strategies-System` (commit `14720e4`).
 
 ## Known open items (as of this writing)
 
