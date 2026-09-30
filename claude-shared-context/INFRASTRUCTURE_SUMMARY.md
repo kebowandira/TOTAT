@@ -397,6 +397,16 @@ Continued porting the remaining engines. Checked K50-SMT and TRL_AS first since 
 
 Pushed to `kebowandira/APEX-Winning-Strategies-System` (commit `3684cef`), deployed and verified live on both GreenCloud and the Windows wrapper.
 
+## ECO3/APPH Vector Pullback ported - 7th real-detection engine (2026-09-30)
+
+Continued the engine-porting pass in the same session. ECO3's canonical B1 (D1+H4 EMA50 trend vector → M15 EMA50 touch → RSI(14)<40 exhaustion → bullish engulfing micro-BOS trigger) turned out to be the most tractable of the remaining engines: single symbol, three timeframes already being fetched for RAMA/SBO (D1/H4/M15), and - unlike RAMA/SBO's structural price-level SL/TP - the source's own SL/TP formula (`entry - 2×ATR`, `entry + 1.5R = entry + 3×ATR`) is a plain ATR multiplier, so it plugs directly into `get_params()`/the tuning system like the single-timeframe engines (SBB/HABE/MUSIC/AGMF) do. Added a new `_rsi()` Wilder RSI helper to `strategy/filters.py`.
+
+**Real difficulty building the synthetic test, worth recording as a lesson**: constructing a valid hand-built BUY test case took several failed attempts before succeeding. The core problem: RSI(14) is reactive enough that any single bar large enough to carry price from below a (lagging) EMA50 back up through it tends to also push RSI back above the 40 exhaustion threshold in the same move - the "touch the EMA while still oversold" window is genuinely narrow and sensitive to the exact ratio of decline-depth to recovery-bar-size. Repeated hand-tuning of decline/recovery magnitudes kept landing just outside the window (RSI crossing 40 one bar before or after the EMA touch). Resolved by writing a small parameter grid search (varying uptrend slope, decline length/depth, reclaim-bar size) instead of continuing to guess by hand - found a working combination on the first systematic pass. Confirmed both BUY and SELL fire correctly with the found parameters, then ran the usual 300-seed random-noise stress test (0 false fires, 0 crashes).
+
+**Engine count is now 7**: SBB, HABE, MUSIC, AGMF, RAMA, SBO, ECO3 - 10 variants total, all real detection. FAMT and LKZ remain unexplored; K50-SMT and TRL_AS remain explicitly deferred (second-symbol data feed and trailing-stop position management, respectively).
+
+Pushed to `kebowandira/APEX-Winning-Strategies-System` (commit `181325a`), deployed and verified live on both GreenCloud and the Windows wrapper.
+
 ## Known open items (as of this writing)
 
 - NL1 and MassiveGrid SSH access hasn't been re-verified since a scratchpad clear cost Dasabo's keys (recovered 2026-09-14). Worth a quick check before relying on them.
