@@ -407,6 +407,20 @@ Continued the engine-porting pass in the same session. ECO3's canonical B1 (D1+H
 
 Pushed to `kebowandira/APEX-Winning-Strategies-System` (commit `181325a`), deployed and verified live on both GreenCloud and the Windows wrapper.
 
+## LKZ_FVG ported, FAMT investigated and skipped - 8th real-detection engine (2026-09-30)
+
+Continued the engine-porting pass further in the same session. Checked FAMT first (next in line after ECO3) and found a real blocker: its canonical signal requires tick-level CVD (cumulative volume delta computed from raw `MqlTick` arrays, last 1000 ticks) as a hard requirement, not an optional confluence factor - a data granularity this wrapper has never fetched (everything so far has been M15/H1/H4/D1 bars). The source's own deep dive independently flags it "MAJOR REWORK REQUIRED" with known bugs (handle leaks, an unfiltered `CloseAllPositions()`, a Bollinger Band mislabeled as VWAP). Skipped, documented, left open alongside K50-SMT and TRL_AS.
+
+**LKZ_FVG ported instead** - D1+M15 stacked-EMA direction concordance (5>9>13>21 + D1 close>EMA200) → a bullish/bearish Fair Value Gap detected during a fixed "PRE" window → a Doji-then-Confirm retrace pattern during a later "LKZ" window consumes that stored FVG. No new data source needed - D1 and M15 were both already being fetched for other engines. The genuinely interesting adaptation problem: the source is **stateful across session windows hours apart** (an FVG detected at 02:30-03:00 NY must be remembered and consumed at 03:00-06:30 NY) - solved the same way RAMA's opening-range box was solved, by re-scanning the M15 bar history each call for the most recent PRE-hour FVG on the same calendar day, rather than adding real cross-call persistence.
+
+**Deliberately ported source variant B2, not the canonical B1**: the deep dive itself flags B1's 8R take-profit target as "curve-fit risk" and explicitly recommends B2's 3R as the v4 production default - so B2 is what got implemented, a case of following the source's own documented recommendation rather than the strictly "canonical" signal (same kind of judgment call as choosing RAMA's true canonical B1 despite its worse backtest, but the opposite direction - here the source author itself said not to use the canonical version).
+
+**Verified**: fired correctly on the very first hand-constructed synthetic test case (stacked D1+M15 EMAs, PRE-window FVG, LKZ-window Doji+Confirm) - no repeated trial-and-error needed this time, unlike ECO3's RSI-timing difficulty. 300-seed random-noise stress test: 0 false fires, 0 crashes. Live via `/candidate_setups`: 200 OK, `used_real_pattern_detection: true`, correctly quiet.
+
+**Engine count is now 8**: SBB, HABE, MUSIC, AGMF, RAMA, SBO, ECO3, LKZ - 11 variants total, all real detection. Only K50-SMT (needs second-symbol data), TRL_AS (needs trailing-stop position management), and FAMT (needs tick-level data) remain unported, all for genuine capability-gap reasons rather than left unexplored.
+
+Pushed to `kebowandira/APEX-Winning-Strategies-System` (commit `1fe5ea9`), deployed and verified live on both GreenCloud and the Windows wrapper.
+
 ## Known open items (as of this writing)
 
 - NL1 and MassiveGrid SSH access hasn't been re-verified since a scratchpad clear cost Dasabo's keys (recovered 2026-09-14). Worth a quick check before relying on them.
