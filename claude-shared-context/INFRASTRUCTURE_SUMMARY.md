@@ -441,6 +441,30 @@ Deployed and verified live end-to-end on both GreenCloud and the Windows wrapper
 
 Pushed to `kebowandira/APEX-Winning-Strategies-System` (commit `f6b921b`).
 
+## FAMT V5 ported - all 11 source-catalog engines now live (2026-10-01)
+
+Owner approved FAMT too. This needed a genuinely new capability - tick-level order-flow data - not just another adaptation, since every version of FAMT's signal requires cumulative volume delta (CVD) computed from raw ticks.
+
+**New capability: `mt5_data.get_tick_cvd()`** fetches the last 1000 real ticks (`mt5.copy_ticks_from`) and classifies each by MT5's buy/sell flags when the broker supplies them, falling back to the standard "tick rule" (price direction vs the previous tick) otherwise. Also added `tick_volume` to `get_bar_history()`'s output (for FAMT's Low-Volume-Node check) and M1 bar fetching (for its FVG confirmation - M1 is 15x finer than M15, a bigger step down than the M15-for-M5 substitutions used elsewhere, so real M1 data was fetched rather than approximated).
+
+**Real bug caught before it shipped, worth recording**: the first version of `get_tick_cvd()` checked tick flag bits 2 and 4 for BUY/SELL, from a half-remembered guess at MT5's bit layout. Verified the actual constants live on the Windows box before trusting them (`mt5.TICK_FLAG_BUY=32`, `TICK_FLAG_SELL=64` - bits 2/4 are actually `TICK_FLAG_BID`/`TICK_FLAG_ASK`) and checked a real tick sample, which confirmed this demo's ticks only ever carry BID/ASK flags, never BUY/SELL. The bug would have silently misread nearly every tick as a BUY (BID is set on most ticks) and made the whole CVD signal meaningless - caught by checking real values before relying on them, not by a test failing.
+
+**Second real bug caught during synthetic testing**: the source's literal formula is "TP = prior POC" for this variant (NY out-of-balance breakout, B1). But POC sits below the prior day's VAH by construction, and B1 only triggers once price is already trading above VAH - meaning "TP = POC" places the profit target BEHIND entry for a BUY, not ahead of it. FAMT's own deep dive independently flags the original source "MAJOR REWORK REQUIRED" with known bugs; this reads as exactly that kind of bug rather than something to port faithfully. Used the deep dive's own stated "~1.5R" expectation as the TP instead, documented clearly as a deliberate deviation from the literal source formula.
+
+`detect_famt()` implements the canonical B1 (NY-session out-of-balance breakout + Low-Volume-Node + CVD aggression + M1 Fair Value Gap + no-absorption filter) as a clean reimplementation of the documented CONCEPT rather than a port of the source's own buggy MQL5 lines.
+
+**Verified**: synthetic BUY case fires correctly with SL/TP on the correct sides of entry, a 300-seed random-noise stress test (0 false fires, 0 crashes), and a 100-seed test exercising the full `analyze_live()` pipeline with all 11 engines together (0 errors). Confirmed real tick data actually fetches on this demo account (1000 ticks returned) before relying on it, and verified live end-to-end via `/candidate_setups` (200 OK, no errors, correctly quiet).
+
+**All 11 engines from the source catalog are now wired and running real pattern detection**: SBB, HABE, MUSIC, AGMF, RAMA, SBO, ECO3, LKZ, K50-SMT, TRL, FAMT - 14 variants total. This is the complete set; no further engines remain to port.
+
+## Dashboard usability improvements (2026-10-01)
+
+Three requests, all shipped same session:
+- **Tuning page**: approve/reject buttons moved to the leftmost column (were last, meaning scrolling right to act on mobile). Split the single mixed list into "Needs attention" (pending only) and "History" (everything decided) - previously decided rows buried new pending ones since both sorted together by id.
+- **Open Positions**: click-to-expand live price chart per position. New wrapper `GET /price_history` (M15 bars) + dashboard proxy `GET /api/price_history`. Clicking "View" renders a Chart.js line chart of the last 100 M15 closes with entry/SL/TP reference lines, so a position's context is visible without leaving the page. Auto-refresh disabled on this page (same pattern as Upload) since a 15s reload would collapse any open chart.
+
+Pushed to `kebowandira/APEX-Winning-Strategies-System` (commits `51fbbc5`, `4c99457`), deployed and verified live on both GreenCloud and the Windows wrapper.
+
 ## Known open items (as of this writing)
 
 - NL1 and MassiveGrid SSH access hasn't been re-verified since a scratchpad clear cost Dasabo's keys (recovered 2026-09-14). Worth a quick check before relying on them.
