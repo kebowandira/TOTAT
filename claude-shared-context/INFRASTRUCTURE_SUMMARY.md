@@ -421,6 +421,26 @@ Continued the engine-porting pass further in the same session. Checked FAMT firs
 
 Pushed to `kebowandira/APEX-Winning-Strategies-System` (commit `1fe5ea9`), deployed and verified live on both GreenCloud and the Windows wrapper.
 
+## K50-SMT and TRL_AS unblocked - 9th and 10th real-detection engines (2026-09-30)
+
+Owner pushed back on both deferrals from earlier today and asked for each capability gap to actually get built, plus explicitly asked to ground TRL's trailing-stop design in our own trade history rather than guessing. Both done.
+
+**K50-SMT (second-symbol data)**: before writing any code, confirmed XAGUSD is genuinely available on this broker via `mt5.symbols_get()` (also found XAGEUR/XAGAUD/XAGG/XAGI) - didn't assume it, checked. Added `mt5_data.COMPARATOR_SYMBOL` and made `get_bar_history()` call `symbol_select()` for any non-primary symbol (needed for XAGUSD to return data at all - it wasn't in Market Watch by default, same class of gotcha as XAUUSD's own earlier "freshly-selected symbol" issue). `detect_k50smt()` implements the canonical B1: PO3 accumulation-box sweep + gold-vs-silver SMT divergence (gold makes a fresh low, silver doesn't) + M15-standing-in-for-M5 FVG confirmation + H1 anchor-midpoint discount/premium gate.
+
+**Real bug caught during testing, worth recording**: the first version collapsed the sweep and its confirming FVG into the same bar - structurally wrong, since the source explicitly requires the FVG to be a LATER event (within 5 bars of the sweep), and a bar whose low dips far enough to sweep the box can't simultaneously gap up enough to form a bullish FVG in the same candle. Synthetic testing caught this immediately (kept returning None on an obviously-valid setup). Rewrote to scan the last 5 bars for the sweep event, then check for a qualifying FVG in the bars *after* it - verified working after the fix, then a 300-seed random-noise stress test (0 false fires, 0 crashes).
+
+**TRL_AS (trailing-stop position management)**: this pipeline could only ever place fixed SL/TP orders. TRL's design has no take-profit at all (`TP_MODE=NONE`, a mandatory structural trailing stop is its actual defining trait per its own Sentinel contract, not something to simplify past). Built real trailing-stop infrastructure: `mt5_data.modify_position_sl()` (MT5's `TRADE_ACTION_SLTP` request, resends the existing TP unchanged since that request type needs both fields), a new wrapper `POST /positions/{ticket}/modify_sl` endpoint, and `executor.py`'s `check_trailing_watches()` (runs every 10s in the same loop as the existing profit-target watches). Also added `price_current` to `/positions` - trailing math now works in real price/R terms rather than reverse-engineering price from profit/volume with assumed tick values, which would have been fragile if the real broker contract spec ever differed from our assumption.
+
+**Grounded in real trade history, as asked**: pulled the 10-trade MAE/MFE dataset before picking trail parameters - avg MFE_R ~0.24 across all trades, with the 3 real winners specifically showing ~0.34-0.39R before our fixed exit (and all 3 continued running afterward, per the earlier efficiency analysis). This directly informed the provisional `activation_r=0.3` / `trail_r=0.3` defaults (activate the trail early, trail tight) rather than picking arbitrary round numbers - explicitly documented in both the schema comment and `filters.py`'s docstring as provisional given the tiny sample, with a note to revisit via the same walk-forward backtest approach used for the other engines' SL/TP multipliers once more trades accumulate.
+
+`detect_trl()` implements canonical B1 (validated support/resistance bounce): the Action Line is approximated as a flat rolling H1 extreme (highest high / lowest low over a lookback window) rather than the source's slope-projected trendline with touch-count/line-age tracking - a real simplification, documented. SL uses the source's own formula (line minus a small ATR buffer).
+
+**Engine count is now 10 of 11 possible**: SBB, HABE, MUSIC, AGMF, RAMA, SBO, ECO3, LKZ, K50-SMT, TRL - 13 variants total. Only FAMT remains unported, and it's now the sole genuine remaining capability gap (tick-level order-flow data) rather than one of three.
+
+Deployed and verified live end-to-end on both GreenCloud and the Windows wrapper - confirmed the executor service restarted cleanly and stayed healthy across multiple poll cycles (the trailing_watches loop runs on every cycle even with zero watches registered, and didn't error).
+
+Pushed to `kebowandira/APEX-Winning-Strategies-System` (commit `f6b921b`).
+
 ## Known open items (as of this writing)
 
 - NL1 and MassiveGrid SSH access hasn't been re-verified since a scratchpad clear cost Dasabo's keys (recovered 2026-09-14). Worth a quick check before relying on them.
