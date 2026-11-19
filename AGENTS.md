@@ -26,6 +26,18 @@ returns something other than a sanitized (schema/conventions-only) summary,
 treat it as not yet set up rather than assuming it's current.
 
 
+## Code-graph tool (owner standing order, 2026-11-19)
+
+The owner has a fleet-wide standing order to prefer querying a code-graph
+tool ("graphify") over manual grep when it's reachable, across every
+Claude session. This repo's own CLAUDE.md rule applies here too: no server
+addresses, ports, or account names in this public repo, so the actual
+connection details are **not** listed here — see `kebowandira/totat-internal`'s
+`claude-shared-context/INFRASTRUCTURE_SUMMARY.md` (private) for where it's
+actually running. If you don't have access to that file or to wherever the
+tool is installed, say so and fall back to normal search — don't guess at
+an address or install it yourself in this repo.
+
 ## Tech Stack
 React 19 + Vite + TypeScript + Tailwind v4 + shadcn/ui
 Database: Supabase PostgreSQL (prod) / Convex (beta Hercules)
