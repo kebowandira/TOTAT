@@ -64,7 +64,7 @@ chore: description
 ## Agent rules: save Claude usage (owner, 2026-11-27)
 
 Applies to every agent working in this repository: Claude Code, agy, ask-gemini, Gemini, Jules and Colab
-notebooks. Full text: host rule 14 in `kebowandira/bule-ai-os` `agy/CLAUDE_HOST_RULES.md`.
+notebooks. Full text: the "Save Claude usage" host rule in `kebowandira/bule-ai-os` `agy/CLAUDE_HOST_RULES.md`.
 
 1. Graphify first. Query the cross-repo graph (MCP `graphify-cross-repo` on DE1, backup on NL2, or
    `graphify query "<question>"`), then read only the files and lines it points to. No full-repository rereads.
